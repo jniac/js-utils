@@ -2,50 +2,80 @@
 <html>
 <head>
 	<title>event.js tests</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 30px;
+		}
+		pre {
+			margin: 0;
+		}
+	</style>
 </head>
 <body>
 
+<pre style="font-size: 3em">code</pre>
+<pre class="source" style="color:#999;"></pre>
+<pre style="font-size: 3em">console</pre>
+<pre class="console"></pre>
 
-<script type="module">
+<script type="text/javascript">
 	
-	import * as eventjs from '../src/event.js'
+	function log() {
 
-	let foo = new eventjs.EventDispatcher()
+		console.log.apply(null, arguments)
 
-	// classic
-	foo.addEventListener('hello', event => console.log(event.type))
-	// shorthands
-	foo.on('hello', event => console.log(event.type))
-	// give a priority
-	foo.on('hello', event => console.log(`${event.type}: first! (priority: 100)`), { priority: 100 })
-	// multiple listeners
-	foo.on('start end', event => console.log(event.type))
-	// regexp
-	foo.on(/start|end/, event => console.log(`${event.type}: using regexp /start|end/`))
+		let p = document.createElement('p')
+		p.innerText = [...arguments].join(' ')
 
-	// dispatch one event
-	foo.dispatchEvent('start')
+		document.body.querySelector('pre.console').appendChild(p)
 
-	// dispatch multiples events
-	foo.dispatchEvent('hello end')
+	}
 
-	// remove all event listeners for 'hello'
-	foo.off('hello')
-	// this produces nothing anymore...
-	foo.dispatchEvent('hello')
+</script>
 
+<script type="text/javascript" src="event.js"></script>
+<script type="text/javascript">
 	
+let foo = new eventjs.EventDispatcher()
 
-	let bar = {}
+// classic
+foo.addEventListener('hello', event => log(event.type))
+// shorthands
+foo.on('hello', event => log(event.type))
+// give a priority
+foo.on('hello', event => log(`${event.type}: first! (priority: 100)`), { priority: 100 })
+// multiple listeners
+foo.on('start end', event => log(event.type))
+// regexp
+foo.on(/start|end/, event => log(`${event.type}: using regexp /start|end/`))
 
-	// make an existing object implement EventDispatcher
-	eventjs.implementEventDispatcher(bar)
+// dispatch one event
+foo.dispatchEvent('start')
 
-	bar.on('baz', event => console.log(`${event.type}: i can now dispatch events`))
+// dispatch multiples events
+foo.dispatchEvent('hello end')
 
-	bar.dispatchEvent('baz')
+// remove all event listeners for 'hello'
+foo.off('hello')
+// this produces nothing anymore...
+foo.dispatchEvent('hello')
+
+
+
+let bar = {}
+
+// make an existing object implement EventDispatcher
+eventjs.implementEventDispatcher(bar)
+
+bar.on('baz', event => log(`${event.type}: i can now dispatch events`))
+
+bar.dispatchEvent('baz')
+
+document.querySelector('pre.source').innerText = document.currentScript.innerText
 
 
 </script>
+
 </body>
 </html>

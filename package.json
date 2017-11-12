@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup src/event.js --format iife --file test/event.js",
+    "build2": "rollup src/event.js --format iife --name 'eventjs' | babel --es2015 -o test/event.js",
+    "end": null
   },
   "repository": {
     "type": "git",
