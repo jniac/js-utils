@@ -1,4 +1,8 @@
 
+// js-utils
+// event.js
+// https://github.com/jniac/js-utils
+
 export class Event {
 
 	constructor(type) {
@@ -218,6 +222,8 @@ export function implementEventDispatcher(target, { applyShortands = true } = {})
 			Object.defineProperty(target, k, { value: EventDispatcherShorthands[k] })
 
 	Object.defineProperty(target, 'isEventDispatcher', { value: true })
+
+	return target
 
 }
 
