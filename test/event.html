@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>event.js tests</title>
+</head>
+<body>
+
+
+<script type="module">
+	
+	import * as eventjs from '../src/event.js'
+
+	let foo = new eventjs.EventDispatcher()
+
+	// classic
+	foo.addEventListener('hello', event => console.log(event.type))
+	// shorthands
+	foo.on('hello', event => console.log(event.type))
+	// give a priority
+	foo.on('hello', event => console.log(`${event.type}: first! (priority: 100)`), { priority: 100 })
+	// multiple listeners
+	foo.on('start end', event => console.log(event.type))
+	// regexp
+	foo.on(/start|end/, event => console.log(`${event.type}: using regexp /start|end/`))
+
+	// dispatch one event
+	foo.dispatchEvent('start')
+
+	// dispatch multiples events
+	foo.dispatchEvent('hello end')
+
+	// remove all event listeners for 'hello'
+	foo.off('hello')
+	// this produces nothing anymore...
+	foo.dispatchEvent('hello')
+
+	
+
+	let bar = {}
+
+	// make an existing object implement EventDispatcher
+	eventjs.implementEventDispatcher(bar)
+
+	bar.on('baz', event => console.log(`${event.type}: i can now dispatch events`))
+
+	bar.dispatchEvent('baz')
+
+
+</script>
+</body>
+</html>
