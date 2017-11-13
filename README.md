@@ -20,9 +20,11 @@ Regexp
 
 	foo.on(/bar|baz/, listener)
 
-Shorthands (on/once/off, optional when choosing implementation instead inheritance)    
-	 
-	 
+Shorthands (on/once/off, optional when choosing implementation instead inheritance) 
+
+	foo.on('bar', listener)
+	foo.once('baz', listener)
+	foo.off('bar'[, listener])
 
 Priority
 
