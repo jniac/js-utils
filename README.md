@@ -10,7 +10,7 @@ EventDispatcher that can be herited or implemented:
 
 	let foo = {}
 	eventjs.implementEventDispatcher(foo)
-	< === >
+	 
 	let foo = eventjs.implementEventDispatcher({
 		member1: value1,
 		...
