@@ -168,13 +168,6 @@ const Prototype = {
 
 			for (let target of targets) {
 
-				if (!target.isEventDispatcher) {
-
-					console.warn('target is not an EventDispatcher:', target)
-					continue
-
-				}
-
 				let event2 = new Event(event.type, event.options)
 					.initTarget(event.target)
 					.setCurrentTarget(target)
