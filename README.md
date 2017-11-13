@@ -6,10 +6,15 @@ EventDispatcher that can be herited or implemented:
 	
 	class Foo extends eventjs.EventDispatcher { ... }
 	 
-	eventjs.implementEventDispatcher(Foo.prototype))
+	eventjs.implementEventDispatcher(Foo.prototype)
 
 	let foo = {}
-	eventjs.implementEventDispatcher(foo))
+	eventjs.implementEventDispatcher(foo)
+	< === >
+	let foo = eventjs.implementEventDispatcher({
+		member1: value1,
+		...
+	})
 
 Regexp
 
