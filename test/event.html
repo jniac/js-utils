@@ -54,6 +54,8 @@ let foo = new eventjs.EventDispatcher()
 foo.addEventListener('hello', event => log(event.type))
 // shorthands
 foo.on('hello', event => log(event.type))
+// get some custom data from the event
+foo.on('custom', event => log(event.type + ', ' + event.customData + ', ' + event.precision))
 // give a priority
 foo.on('hello', event => log(`${event.type}: first! (priority: 100)`), { priority: 100 })
 // multiple listeners
@@ -61,16 +63,23 @@ foo.on('start end', event => log(event.type))
 // regexp
 foo.on(/start|end/, event => log(`${event.type}: using regexp /start|end/`))
 
-// dispatch one event
+// dispatch an event
 foo.dispatchEvent('start')
 
-// dispatch multiples events
+// dispatch an event with some custom data 
+foo.dispatchEvent('custom', { customData: 'something important', precision: 'customData is not a keyword' })
+
+// dispatch multiples events (separated by whitespace)
 foo.dispatchEvent('hello end')
+
+log('\n--- end of foo events ---\n\n')
 
 // remove all event listeners for 'hello'
 foo.off('hello')
 // this produces nothing anymore...
 foo.dispatchEvent('hello')
+
+
 
 
 
@@ -98,13 +107,13 @@ bar.barTrigger('hello-baby')
 bar.barTrigger('can-you light-my-fire?')
 
 // ...or with an function
-bar = eventjs.implementEventDispatcher({}, { remap: k => '__bar' + k[0].toUpperCase() + k.slice(1) })
+bar = eventjs.implementEventDispatcher({}, { remap: k => '__X__bar' + k[0].toUpperCase() + k.slice(1) })
 log(Object.keys(bar))
 
-bar.__barOn(/.?/, event => log(event.type))
-bar.__barDispatchEvent('quite-a-nasty-prefix')
-bar.__barOff(/.?/)
-bar.__barDispatchEvent('is-there-anybody?')
+bar.__X__barOn(/.?/, event => log(event.type))
+bar.__X__barDispatchEvent('quite-a-nasty-prefix')
+bar.__X__barOff(/.?/)
+bar.__X__barDispatchEvent('is-there-anybody?')
 
 
 </script>

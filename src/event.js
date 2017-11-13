@@ -196,7 +196,7 @@ const Prototype = {
 
 }
 
-const EventDispatcherShorthands = {
+const Shorthands = {
 
 	on: Prototype.addEventListener,
 
@@ -220,10 +220,10 @@ export function implementEventDispatcher(target, { applyShortands = true, remap 
 		Object.defineProperty(target, remapK(k), { value: Prototype[k] })
 
 	if (applyShortands)
-		for (let k in EventDispatcherShorthands)
-			Object.defineProperty(target, remapK(k), { value: EventDispatcherShorthands[k] })
+		for (let k in Shorthands)
+			Object.defineProperty(target, remapK(k), { value: Shorthands[k] })
 
-	Object.defineProperty(target, 'isEventDispatcher', { value: true })
+	Object.defineProperty(target, remapK('isEventDispatcher'), { value: true })
 
 	return target
 
