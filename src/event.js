@@ -181,7 +181,7 @@ const Prototype = {
 
 		for (let listener, i = 0; listener = listeners[i]; i++) {
 
-			if (listener.type === type && (!callback || callback === listener.callback)) {
+			if (String(listener.type) === String(type) && (!callback || callback === listener.callback)) {
 
 				listeners.splice(i--, 1)
 				listener.kill()
