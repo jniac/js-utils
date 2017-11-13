@@ -40,6 +40,7 @@ Regexp
 
 Bubbling, propagation through a delegate 'propagateTo'
 	
+	// propagateTo could return any of (null | object | [object])
 	child.dispatchEvent('born', null, { propagateTo: child => child.parent })
 
 test page: [event.html](http://htmlpreview.github.io/?https://github.com/jniac/js-utils/blob/master/test/event.html)  

@@ -166,8 +166,6 @@ const Prototype = {
 			if (!(targets instanceof Array))
 				targets = [targets]
 
-			console.log(targets)
-
 			for (let target of targets) {
 
 				if (!target.isEventDispatcher) {
