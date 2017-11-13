@@ -2,40 +2,51 @@
 <html>
 <head>
 	<title>event.js tests</title>
+	
 	<style type="text/css">
+		html {
+			background-color: #eee;
+		}
 		body {
 			margin: 0;
 			padding: 30px;
 		}
-		pre {
+		pre, p {
 			margin: 0;
 		}
 	</style>
+
+	<script type="text/javascript">
+		
+		function log() {
+
+			console.log.apply(null, arguments)
+
+			let p = document.createElement('p')
+			p.innerText = [...arguments].join(' ')
+
+			document.body.querySelector('pre.console').appendChild(p)
+
+		}
+
+	</script>
+
 </head>
 <body>
 
-<pre style="font-size: 3em">code</pre>
+<pre style="font-size: 3em; color:#999;">code</pre>
 <pre class="source" style="color:#999;"></pre>
+<br>
 <pre style="font-size: 3em">console</pre>
 <pre class="console"></pre>
 
-<script type="text/javascript">
-	
-	function log() {
+<script class="source" type="module">
 
-		console.log.apply(null, arguments)
 
-		let p = document.createElement('p')
-		p.innerText = [...arguments].join(' ')
 
-		document.body.querySelector('pre.console').appendChild(p)
 
-	}
 
-</script>
-
-<script type="text/javascript" src="event.js"></script>
-<script type="text/javascript">
+import * as eventjs from '../src/event.js'
 	
 let foo = new eventjs.EventDispatcher()
 
@@ -72,10 +83,40 @@ bar.on('baz', event => log(`${event.type}: i can now dispatch events`))
 
 bar.dispatchEvent('baz')
 
-document.querySelector('pre.source').innerText = document.currentScript.innerText
+// remap key to avoid overriding
+// with an object...
+bar = eventjs.implementEventDispatcher({}, { remap: {
+
+	on: 'barOn',
+	off: 'barOff',
+	dispatchEvent: 'barTrigger',
+
+}})
+
+bar.barOn(/.?/, event => log(event.type))
+bar.barTrigger('hello-baby')
+bar.barTrigger('can-you light-my-fire?')
+
+// ...or with an function
+bar = eventjs.implementEventDispatcher({}, { remap: k => '__bar' + k[0].toUpperCase() + k.slice(1) })
+log(Object.keys(bar))
+
+bar.__barOn(/.?/, event => log(event.type))
+bar.__barDispatchEvent('quite-a-nasty-prefix')
+bar.__barOff(/.?/)
+bar.__barDispatchEvent('is-there-anybody?')
 
 
 </script>
+
+<script type="module">
+
+document.querySelector('pre.source').innerText = document.querySelector('script.source').innerText.trim()
+	
+</script>
+
+<!-- <script type="text/javascript" src="event.js"></script>
+<script type="text/javascript"></script> -->
 
 </body>
 </html>

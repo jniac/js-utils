@@ -72,7 +72,7 @@ class Listener {
 
 }
 
-const EventDispatcherPrototype = {
+const Prototype = {
 
 	getListeners({ copy = false } = {}) {
 
@@ -85,7 +85,7 @@ const EventDispatcherPrototype = {
 
 	getListenerIndexFor(priority, before) {
 
-		let listeners = this.getListeners()
+		let listeners = Prototype.getListeners.call(this)
 
 		for (let listener, i = 0; listener = listeners[i]; i++) 
 			if ((before && priority >= listener.priority) ||
@@ -105,7 +105,7 @@ const EventDispatcherPrototype = {
 			if (events.length > 1) {
 
 				for (let v of events)
-					this.dispatchEvent(v, eventParams)
+					Prototype.dispatchEvent.call(this, v, eventParams)
 
 				return this
 
@@ -119,7 +119,7 @@ const EventDispatcherPrototype = {
 
 		Object.defineProperty(event, 'target', { value: this })
 
-		for (let listener of this.getListeners({ copy: true })) {
+		for (let listener of Prototype.getListeners.call(this, { copy: true })) {
 
 			if (listener.test(event.type))
 				listener.call(event)
@@ -129,7 +129,7 @@ const EventDispatcherPrototype = {
 
 		}
 
-		for (let listener, listeners = this.getListeners(), i = 0; listener = listeners[i]; i++)
+		for (let listener, listeners = Prototype.getListeners.call(this), i = 0; listener = listeners[i]; i++)
 			if (listener.isKilled())
 				listeners.splice(i--, 1)
 
@@ -146,7 +146,7 @@ const EventDispatcherPrototype = {
 			if (types.length > 1) {
 
 				for(let v of types)
-					this.addEventListener(v, callback, { priority, insertBefore, thisArg, max })
+					Prototype.addEventListener.call(this, v, callback, { priority, insertBefore, thisArg, max })
 
 				return this
 
@@ -154,9 +154,9 @@ const EventDispatcherPrototype = {
 
 		}
 
-		let listeners = this.getListeners()
+		let listeners = Prototype.getListeners.call(this)
 
-		let index = this.getListenerIndexFor(priority, insertBefore)
+		let index = Prototype.getListenerIndexFor.call(this, priority, insertBefore)
 
 		listeners.splice(index, 0, new Listener(this, type, callback, priority, max, thisArg))
 
@@ -166,7 +166,7 @@ const EventDispatcherPrototype = {
 
 	removeAllEventListeners() {
 
-		let listeners = this.getListeners()
+		let listeners = Prototype.getListeners.call(this)
 
 		while(listeners.length)
 			listeners.pop().kill()
@@ -177,7 +177,7 @@ const EventDispatcherPrototype = {
 
 	removeEventListener(type, callback = null) {
 
-		let listeners = this.getListeners()
+		let listeners = Prototype.getListeners.call(this)
 
 		for (let listener, i = 0; listener = listeners[i]; i++) {
 
@@ -198,28 +198,30 @@ const EventDispatcherPrototype = {
 
 const EventDispatcherShorthands = {
 
-	on: EventDispatcherPrototype.addEventListener,
+	on: Prototype.addEventListener,
 
 	once(type, callback, options = {}) {
 
-		this.addEventListener(type, callback, Object.assign(option, { max: 1 }))
+		Prototype.addEventListener.call(this, type, callback, Object.assign(option, { max: 1 }))
 
 		return this
 
 	},
 
-	off: EventDispatcherPrototype.removeEventListener,
+	off: Prototype.removeEventListener,
 
 }
 
-export function implementEventDispatcher(target, { applyShortands = true } = {}) {
+export function implementEventDispatcher(target, { applyShortands = true, remap = null } = {}) {
 
-	for (let k in EventDispatcherPrototype)
-		Object.defineProperty(target, k, { value: EventDispatcherPrototype[k] })
+	const remapK = typeof remap === 'function' ? remap : (k => remap ? (remap[k] || k) : k)
+
+	for (let k in Prototype)
+		Object.defineProperty(target, remapK(k), { value: Prototype[k] })
 
 	if (applyShortands)
 		for (let k in EventDispatcherShorthands)
-			Object.defineProperty(target, k, { value: EventDispatcherShorthands[k] })
+			Object.defineProperty(target, remapK(k), { value: EventDispatcherShorthands[k] })
 
 	Object.defineProperty(target, 'isEventDispatcher', { value: true })
 
