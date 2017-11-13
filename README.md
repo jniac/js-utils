@@ -24,7 +24,8 @@ Shorthands (on/once/off, optional when choosing implementation instead inheritan
 
 	foo.on('bar', listener)
 	foo.once('baz', listener)
-	foo.off('bar'[, listener])
+	foo.off('bar', listener)	// remove one listener
+	foo.off('bar')				// remove all listeners that listen 'bar'
 
 Priority
 
