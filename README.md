@@ -16,10 +16,6 @@ EventDispatcher that can be herited or implemented:
 		...
 	})
 
-Regexp
-
-	foo.on(/bar|baz/, listener)
-
 Shorthands (on/once/off, optional when choosing implementation instead inheritance) 
 
 	foo.on('bar', listener)
@@ -29,6 +25,21 @@ Shorthands (on/once/off, optional when choosing implementation instead inheritan
 
 Priority
 
-	foo.on('bar', listener, { priority: 1000 })
+	foo.on('bar', listener)
+	foo.on('bar', listener, { priority: 1000 })     // this listener will be called first
+
+Custom data
+	
+	foo.on('bar', event => console.log(event.secret))
+	foo.dispatchEvent('bar', { secret: 'baz' })
+
+Regexp
+
+	foo.on(/bar|baz/, listener)
+	foo.off(/bar|baz/, listener) // cancel (regexp match uses String representation: String(regexp))
+
+Bubbling, propagation through a delegate 'propagateTo'
+	
+	child.dispatchEvent('born', null, { propagateTo: child => child.parent })
 
 test page: [event.html](http://htmlpreview.github.io/?https://github.com/jniac/js-utils/blob/master/test/event.html)  

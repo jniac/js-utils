@@ -5,9 +5,37 @@
 
 export class Event {
 
-	constructor(type) {
+	constructor(type, options) {
 
 		this.type = type
+		this.options = options
+
+	}
+
+	initTarget(target) {
+
+		Object.defineProperty(this, 'target', { 
+
+			value: target,
+
+		})
+
+		Object.defineProperty(this, 'currentTarget', {
+
+			writable: true,
+			value: target,
+
+		})
+
+		return this
+
+	}
+
+	setCurrentTarget(currentTarget) {
+
+		this.currentTarget = currentTarget
+
+		return this
 
 	}
 
@@ -96,7 +124,7 @@ const Prototype = {
 
 	},
 
-	dispatchEvent(eventOrType, eventParams = null) {
+	dispatchEvent(eventOrType, eventParams = null, options = null) {
 
 		if (typeof eventOrType === 'string') {
 
@@ -113,11 +141,9 @@ const Prototype = {
 
 		}
 
-		let event = typeof eventOrType === 'string' ? new Event(eventOrType) : eventOrType
+		let event = typeof eventOrType === 'string' ? new Event(eventOrType, options).initTarget(this) : eventOrType
 
 		Object.assign(event, eventParams)
-
-		Object.defineProperty(event, 'target', { value: this })
 
 		for (let listener of Prototype.getListeners.call(this, { copy: true })) {
 
@@ -132,6 +158,34 @@ const Prototype = {
 		for (let listener, listeners = Prototype.getListeners.call(this), i = 0; listener = listeners[i]; i++)
 			if (listener.isKilled())
 				listeners.splice(i--, 1)
+
+		if (!event.canceled && event.options && event.options.propagateTo) {
+
+			let targets = event.options.propagateTo(event.currentTarget) || []
+
+			if (!(targets instanceof Array))
+				targets = [targets]
+
+			console.log(targets)
+
+			for (let target of targets) {
+
+				if (!target.isEventDispatcher) {
+
+					console.warn('target is not an EventDispatcher:', target)
+					continue
+
+				}
+
+				let event2 = new Event(event.type, event.options)
+					.initTarget(event.target)
+					.setCurrentTarget(target)
+
+				Prototype.dispatchEvent.call(target, event2, eventParams)
+
+			}
+
+		}
 
 		return this
 
@@ -223,7 +277,7 @@ export function implementEventDispatcher(target, { applyShortands = true, remap 
 		for (let k in Shorthands)
 			Object.defineProperty(target, remapK(k), { value: Shorthands[k] })
 
-	Object.defineProperty(target, remapK('isEventDispatcher'), { value: true })
+	Object.defineProperty(target, 'isEventDispatcher', { value: true })
 
 	return target
 

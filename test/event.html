@@ -108,12 +108,33 @@ bar.barTrigger('can-you light-my-fire?')
 
 // ...or with an function
 bar = eventjs.implementEventDispatcher({}, { remap: k => '__X__bar' + k[0].toUpperCase() + k.slice(1) })
-log(Object.keys(bar))
 
 bar.__X__barOn(/.?/, event => log(event.type))
 bar.__X__barDispatchEvent('quite-a-nasty-prefix')
 bar.__X__barOff(/.?/)
+
+log('\n--- end of bar events ---\n\n')
+
 bar.__X__barDispatchEvent('is-there-anybody?')
+
+
+
+
+
+
+// propagation
+
+let fooParent = new eventjs.EventDispatcher()
+let fooChild = new eventjs.EventDispatcher()
+
+fooChild.parent = fooParent
+
+fooParent.on('event', event => log(event.type, 'from fooChild'))
+fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
+
+fooChild.on('event', event => event.cancel()) // cancel prevent propagation
+fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
+
 
 
 </script>
