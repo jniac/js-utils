@@ -112,7 +112,7 @@ _or_
 ```
 // remap key witch a callback
 eventjs.implementEventDispatcher(MyClass.prototype, {
-    remap: key => `__${key}__`
+    remap: key => `__${key}__`,
 })
 myInstance.__dispatchEvent__('an-event')       // do the job!
 ```
