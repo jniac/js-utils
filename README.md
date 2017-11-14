@@ -98,7 +98,7 @@ foo.dispatchEvent('an-event')		// trigger nothing
 
 
 <br> __Without implement or inherit__
-<br> to propagate an event through a existing tree, nodes tree do not even have to implement eventjs.EventDispatcher:
+<br> to propagate an event through a existing tree, tree's nodes do not even have to implement eventjs.EventDispatcher:
 <br> on/once/off/dispatchEvent can be called from eventjs directly
 ```
 // e.g. down from <body> to every HTMLElement
