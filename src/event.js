@@ -76,7 +76,7 @@ export class Event {
 
 }
 
-class Listener {
+class EventListener {
 
 	constructor(eventDispatcher, type, callback, priority, maxCount, thisArg) {
 
@@ -129,18 +129,23 @@ class Listener {
 
 }
 
-export const listenersKey = typeof Symbol === 'undefined' ? '__listeners' : Symbol('listeners')
+export const listenersKey = typeof Symbol === 'undefined' ? '__listeners' : Symbol('eventListeners')
 
 const Prototype = {
 
-	getListeners({ createIfNull = true, copy = false } = {}) {
+	getEventListeners({ createIfNull = false, copy = false } = {}) {
 
 		if (!this[listenersKey]) {
 
 			if (!createIfNull)
 				return []
 
-			Object.defineProperty(this, listenersKey, { value: [] })
+			Object.defineProperty(this, listenersKey, { 
+
+				configurable: true,
+				value: [],
+
+			})
 
 		}
 
@@ -150,7 +155,7 @@ const Prototype = {
 
 	getListenerIndexFor(priority, before) {
 
-		let listeners = Prototype.getListeners.call(this)
+		let listeners = Prototype.getEventListeners.call(this)
 
 		for (let listener, i = 0; listener = listeners[i]; i++) 
 			if ((before && priority >= listener.priority) ||
@@ -182,7 +187,7 @@ const Prototype = {
 
 		Object.assign(event, eventParams)
 
-		for (let listener of Prototype.getListeners.call(this, { copy: true, createIfNull: false })) {
+		for (let listener of Prototype.getEventListeners.call(this, { copy: true, createIfNull: false })) {
 
 			if (listener.test(event.type))
 				listener.call(event)
@@ -192,7 +197,7 @@ const Prototype = {
 
 		}
 
-		for (let listener, listeners = Prototype.getListeners.call(this, { createIfNull: false }), i = 0; listener = listeners[i]; i++)
+		for (let listener, listeners = Prototype.getEventListeners.call(this, { createIfNull: false }), i = 0; listener = listeners[i]; i++)
 			if (listener.isKilled())
 				listeners.splice(i--, 1)
 
@@ -234,22 +239,24 @@ const Prototype = {
 
 		}
 
-		let listeners = Prototype.getListeners.call(this)
+		let listeners = Prototype.getEventListeners.call(this, { createIfNull: true })
 
 		let index = Prototype.getListenerIndexFor.call(this, priority, insertBefore)
 
-		listeners.splice(index, 0, new Listener(this, type, callback, priority, max, thisArg))
+		listeners.splice(index, 0, new EventListener(this, type, callback, priority, max, thisArg))
 
 		return this
 
 	},
 
-	removeAllEventListeners() {
+	clearEventListeners() {
 
-		let listeners = Prototype.getListeners.call(this)
+		let listeners = Prototype.getEventListeners.call(this)
 
 		while(listeners.length)
 			listeners.pop().kill()
+
+		delete this[listenersKey]
 
 		return this
 
@@ -257,7 +264,7 @@ const Prototype = {
 
 	removeEventListener(type, callback = null) {
 
-		let listeners = Prototype.getListeners.call(this)
+		let listeners = Prototype.getEventListeners.call(this)
 
 		for (let listener, i = 0; listener = listeners[i]; i++) {
 
@@ -303,8 +310,6 @@ export function implementEventDispatcher(target, { applyShortands = true, remap 
 		for (let k in Shorthands)
 			Object.defineProperty(target, remapK(k), { value: Shorthands[k] })
 
-	Object.defineProperty(target, 'isEventDispatcher', { value: true })
-
 	return target
 
 }
@@ -345,6 +350,20 @@ export function off(target, type, callback, options) {
 export function dispatchEvent(target, type, eventParams, options) {
 
 	iterate(target, object => Prototype.dispatchEvent.call(object, type, eventParams, options))
+
+	return target
+
+}
+
+export function getEventListeners(target, options) {
+
+	return Prototype.getEventListeners.call(target, options)
+
+}
+
+export function clearEventListeners(target) {
+
+	iterate(target, object => Prototype.clearEventListeners.call(object))
 
 	return target
 
