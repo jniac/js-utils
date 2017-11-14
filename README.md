@@ -81,9 +81,15 @@ __Bubbling / propagation__
 parent.on('born', event => console.log('a new child is born!', event.target))
 child.dispatchEvent('born', null, { propagateTo: child => child.parent })
 ```
+if the event is cloned during propagation (since propagation can be from one object to multiple ones), the clone keeps the same custom properties:
+```
+tree.on('event', event => console.log(event.branchMessage))  // will print 'hello'
+branch.on('event' => event.branchMessage = `hello i'm a branch`)
+leave.dispatchEvent('event', null, { propagateTo: node => node.parent })
+```
 
-__Cancel event__
-<br> easy
+__Cancelling an event__
+<br> smooth...
 ```
 foo.on('an-event', event => console.log(event))
 foo.on('an-event', event => event.cancel(), { priority: 100 })
