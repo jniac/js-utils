@@ -110,7 +110,7 @@ myInstance.trigger('an-event')       // do the job!
 ```
 _or_
 ```
-// remap key witch a callback
+// remap key with a callback
 eventjs.implementEventDispatcher(MyClass.prototype, {
     remap: key => `__${key}__`,
 })
@@ -136,6 +136,18 @@ eventjs.on(document.querySelectorAll('form'), 'changed', event => {
     event.cancel()
 })
 eventjs.dispatchEvent(document.querySelectorAll('form input'), 'changed')
+```
+
+<br> __Clear__
+<br>
+```
+foo.clearEventListeners()
+foo.getEventListeners().length // === 0
+```
+_or_
+```
+eventjs.clearEventListeners(foo)
+eventjs.getEventListeners(foo).length // === 0
 ```
 
 test page: [event.html](http://htmlpreview.github.io/?https://github.com/jniac/js-utils/blob/master/test/event.html)  
