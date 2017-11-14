@@ -65,8 +65,8 @@ foo.off(/bar|baz/, listener)       // cancel (regexp match uses String represent
 
 __Bubbling / propagation__
 <br> thanks to delegate 'propagateTo' the event know to which object propagate
-<br> event.target: a reference to the first object that dispatch the event
-<br> event.currentTarget: a reference to the current object that is currently dispatching the event
+<br> _event.target_: a reference to the first object that dispatch the event
+<br> _event.currentTarget_: a reference to the current object that is currently dispatching the event
 ```
 // propagateTo could return any of (null | object | [object])
 parent.on('born', event => console.log('a new child is born!', event.target))
