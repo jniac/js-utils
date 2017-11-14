@@ -39,7 +39,7 @@ foo.off('bar', listener)    // remove one listener
 foo.off('bar')              // remove all listeners that listen 'bar'
 ```
 
-__Priority__
+<br> __Priority__
 <br>
 ```
 foo.on('bar', listener)
