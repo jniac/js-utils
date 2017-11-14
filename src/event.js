@@ -74,6 +74,12 @@ export class Event {
 
 	}
 
+	toString() {
+
+		return `Event { type: ${this.type} }`
+
+	}
+
 }
 
 class EventListener {
@@ -125,6 +131,12 @@ class EventListener {
 
 		return !this.eventDispatcher && !this.type && !this.callback
 
+	}
+
+	toString() {
+
+		return `EventListener { type: ${this.type}, priority: ${this.priority}, count: ${this.count} }`
+		
 	}
 
 }

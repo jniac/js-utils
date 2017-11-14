@@ -99,6 +99,12 @@ var eventjs = function (exports) {
 
 				this.canceled = true;
 			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+
+				return 'Event { type: ' + this.type + ' }';
+			}
 		}]);
 
 		return Event;
@@ -150,6 +156,12 @@ var eventjs = function (exports) {
 			value: function isKilled() {
 
 				return !this.eventDispatcher && !this.type && !this.callback;
+			}
+		}, {
+			key: 'toString',
+			value: function toString() {
+
+				return 'EventListener { type: ' + this.type + ', priority: ' + this.priority + ', count: ' + this.count + ' }';
 			}
 		}]);
 
