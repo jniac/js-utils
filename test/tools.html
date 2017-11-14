@@ -112,6 +112,11 @@ log(chain.links)
 log(chain)
 
 chain.relation = '+'
+chain.initialValue = 0
+log(chain)
+
+chain.link(this, { value: 7 })
+log(chain.links)
 log(chain)
 
 

@@ -13,31 +13,6 @@ class Link {
 
 	}
 
-	// constructor(value) {
-
-	// 	Object.defineProperty(this, '__value', { 
-
-	// 		writable: true,
-
-	// 	})
-
-	// 	this.setValue(value)
-
-	// }
-
-	// setValue(value) {
-
-	// 	if (this.__value === value)
-	// 		return this
-
-	// 	Object.defineProperty(this, '__value', { value })
-
-	// }
-
-	// get value () { return this.__value }
-
-	// set value(value) { this.setValue(value) }
-
 }
 
 const clamp = x => x < 0 ? 0 : x > 1 ? 1 : x
@@ -71,7 +46,7 @@ export class Chain {
 
 	getValue() {
 
-		let value = 1
+		let value = this.initialValue
 
 		for (let link of this.links)
 			value = relations[this.relation](value, link.value)
@@ -133,7 +108,7 @@ export class Chain {
 
 	toString() {
 
-		return `Chain { relation: ${this.relation}, count: ${this.count}, value: ${this.value} }`
+		return `Chain { relation: ${this.relation}, count: ${this.count}, initialValue: ${this.initialValue}, value: ${this.value} }`
 
 	}
 
