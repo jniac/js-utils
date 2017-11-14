@@ -38,7 +38,7 @@ Regexp
 	foo.on(/bar|baz/, listener)
 	foo.off(/bar|baz/, listener) // cancel (regexp match uses String representation: String(regexp))
 
-Bubbling, propagation through a delegate 'propagateTo'
+Bubbling, propagation thanks to the delegate 'propagateTo'
 	
 	// propagateTo could return any of (null | object | [object])
 	child.dispatchEvent('born', null, { propagateTo: child => child.parent })

@@ -10,6 +10,7 @@
 		body {
 			margin: 0;
 			padding: 30px;
+			font-family: monospace;
 		}
 		pre, p {
 			margin: 0;
@@ -58,6 +59,7 @@
 <body>
 
 <div class="tree">
+	<div>tree</div>
 	<div>
 		<div></div>
 		<div>
@@ -70,7 +72,7 @@
 		<div></div>
 		<div></div>
 		<div>
-			<div class="A"></div>
+			<div class="A">A</div>
 			<div></div>
 		</div>
 	</div>
@@ -183,7 +185,7 @@ fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
 // propagation on DOM without implementing EventDispatcher !!!
 
 // going up the tree ...
-eventjs.on(document.body, /from/, event => log(event.type))
+eventjs.on(document.body, /from/, event => log(`type: ${event.type}, target:${event.target}, currentTarget:${event.currentTarget}`))
 eventjs.dispatchEvent(document.querySelector('.tree .A'), 'from-div.A', null, { 
 	propagateTo: element => element.parentElement,
 })
