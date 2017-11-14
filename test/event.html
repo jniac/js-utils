@@ -183,13 +183,13 @@ fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
 // propagation on DOM without implementing EventDispatcher !!!
 
 // going up the tree ...
-eventjs.on(document.body, /./, event => log(event.type))
+eventjs.on(document.body, /from/, event => log(event.type))
 eventjs.dispatchEvent(document.querySelector('.tree .A'), 'from-div.A', null, { 
 	propagateTo: element => element.parentElement,
 })
 
 // ... or going down
-eventjs.on(document.querySelector('.tree .A'), /./, event => log(event.type))
+eventjs.on(document.querySelector('.tree .A'), /to/, event => log(`type: ${event.type}, target:${event.target}, currentTarget:${event.currentTarget}`))
 eventjs.dispatchEvent(document.body, 'to-div.A', null, { 
 	propagateTo: element => element.children,
 })

@@ -3,6 +3,12 @@
 // event.js
 // https://github.com/jniac/js-utils
 
+function isIterable(obj) {
+
+	return obj && typeof obj[Symbol.iterator] === 'function'
+
+}
+
 export class Event {
 
 	constructor(type, options) {
@@ -163,7 +169,7 @@ const Prototype = {
 
 			let targets = event.options.propagateTo(event.currentTarget) || []
 
-			if (!(targets instanceof Array))
+			if (!isIterable(targets))
 				targets = [targets]
 
 			for (let target of targets) {
