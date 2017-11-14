@@ -7,12 +7,18 @@ A very permissive EventDispatcher.
 EventDispatcher that can be herited or implemented (and even none of that):
 ```
 class Foo extends eventjs.EventDispatcher { ... }
- 
+```
+_or_
+``` 
 eventjs.implementEventDispatcher(Foo.prototype)
-
+```
+_or_
+``` 
 let foo = {}
 eventjs.implementEventDispatcher(foo)
- 
+```
+_or_
+``` 
 let foo = eventjs.implementEventDispatcher({
 	member1: value1,
 	...
