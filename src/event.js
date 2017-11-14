@@ -116,10 +116,16 @@ class Listener {
 
 const Prototype = {
 
-	getListeners({ copy = false } = {}) {
+	getListeners({ createIfNull = true, copy = false } = {}) {
 
-		if (!this.__listeners)
+		if (!this.__listeners) {
+
+			if (!createIfNull)
+				return []
+
 			Object.defineProperty(this, '__listeners', { value: [] })
+
+		}
 
 		return copy ? this.__listeners.concat() : this.__listeners
 
@@ -159,7 +165,7 @@ const Prototype = {
 
 		Object.assign(event, eventParams)
 
-		for (let listener of Prototype.getListeners.call(this, { copy: true })) {
+		for (let listener of Prototype.getListeners.call(this, { copy: true, createIfNull: false })) {
 
 			if (listener.test(event.type))
 				listener.call(event)
@@ -169,7 +175,7 @@ const Prototype = {
 
 		}
 
-		for (let listener, listeners = Prototype.getListeners.call(this), i = 0; listener = listeners[i]; i++)
+		for (let listener, listeners = Prototype.getListeners.call(this, { createIfNull: false }), i = 0; listener = listeners[i]; i++)
 			if (listener.isKilled())
 				listeners.splice(i--, 1)
 
