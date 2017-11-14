@@ -83,7 +83,7 @@ child.dispatchEvent('born', null, { propagateTo: child => child.parent })
 ```
 if the event is cloned during propagation (since propagation can be from one object to multiple ones), the clone keeps the same custom properties:
 ```
-tree.on('event', event => console.log(event.branchMessage))  // will print 'hello'
+root.on('event', event => console.log(event.branchMessage))  // will print `hello i'm a branch`
 branch.on('event' => event.branchMessage = `hello i'm a branch`)
 leave.dispatchEvent('event', null, { propagateTo: node => node.parent })
 ```

@@ -9,6 +9,23 @@ function isIterable(obj) {
 
 }
 
+function iterate(target, callback) {
+
+	if (isIterable(target)) {
+
+		for (let object of target)
+			callback(object)
+
+	} else {
+
+		callback(target)
+
+	}
+
+}
+
+
+
 export class Event {
 
 	constructor(type, options) {
@@ -298,20 +315,8 @@ implementEventDispatcher(EventDispatcher.prototype)
 
 
 
-function iterate(target, callback) {
 
-	if (isIterable(target)) {
 
-		for (let object of target)
-			callback(object)
-
-	} else {
-
-		callback(target)
-
-	}
-
-}
 
 export function on(target, type, callback, options) {
 
