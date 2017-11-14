@@ -7,7 +7,7 @@ A very permissive EventDispatcher.
 import * as eventjs from './event.js'
 ```
 
-EventDispatcher that can be herited or implemented (and even none of that):
+EventDispatcher can be herited or implemented (and even none of that):
 ```
 class Foo extends eventjs.EventDispatcher { ... }
 ```
