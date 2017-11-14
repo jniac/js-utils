@@ -5,7 +5,7 @@
 
 function isIterable(obj) {
 
-	return obj && typeof obj[Symbol.iterator] === 'function'
+	return obj && Symbol && typeof obj[Symbol.iterator] === 'function'
 
 }
 

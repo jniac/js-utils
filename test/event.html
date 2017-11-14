@@ -93,7 +93,7 @@
 	<pre class="console"></pre>
 </div>
 
-<script class="source" type="module">
+<script class="source" type="text">
 
 
 
@@ -249,7 +249,39 @@ log('eventjs.getEventListeners(document.body):', eventjs.getEventListeners(docum
 
 <script type="module">
 
-document.querySelector('pre.source').innerText = document.querySelector('script.source').innerText.trim()
+import '../src/event.js'
+
+document.querySelector('pre.source').innerHTML = document.querySelector('script.source').innerText.trim()
+
+window.hasLoadModule = true
+	
+</script>
+
+<script type="text/javascript">
+
+if (!window.hasLoadModule) {
+// setTimeout(function() {
+
+	var src = document.querySelector('script.source').innerText.trim()
+
+	src = src.split(/import\W.*/g).pop().trim()
+
+	let script1 = document.createElement('script')
+	script1.setAttribute('src', 'js/event.js')
+	document.head.appendChild(script1)
+
+	document.querySelector('pre.source').innerHTML = src
+
+	script1.onload = event => {
+
+		let script2 = document.createElement('script')
+		script2.innerHTML = src
+		document.head.appendChild(script2)
+
+	}
+	
+// }, 200)
+}
 	
 </script>
 

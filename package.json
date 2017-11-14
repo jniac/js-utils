@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "quick-static auto",
-    "build": "rollup src/event.js --format iife --name 'eventjs' | babel --es2015 -o test/event.js",
+    "build": "rollup src/event.js --format iife --name 'eventjs' | babel --es2015 -o test/js/event.js",
     "end": null
   },
   "repository": {
