@@ -233,17 +233,17 @@ foo = new eventjs.EventDispatcher()
 log('foo listen "bar" & "baz"')
 foo.on('bar', event => log(event.type))
 foo.on('baz', event => log(event.type))
-log('foo.getEventListeners():', foo.getEventListeners())
+log('foo.getEventListeners().length:', foo.getEventListeners().length)
 foo.dispatchEvent('bar baz')
 log('foo.clearEventListeners')
 foo.clearEventListeners()
 foo.dispatchEvent('bar baz')
-log('foo.getEventListeners():', foo.getEventListeners())
+log('foo.getEventListeners().length:', foo.getEventListeners().length)
 
-log('\neventjs.getEventListeners(document.body):', eventjs.getEventListeners(document.body))
+log('\neventjs.getEventListeners(document.body).length:', eventjs.getEventListeners(document.body).length)
 log('eventjs.clearEventListeners(document.body)')
 eventjs.clearEventListeners(document.body)
-log('eventjs.getEventListeners(document.body):', eventjs.getEventListeners(document.body))
+log('eventjs.getEventListeners(document.body).length:', eventjs.getEventListeners(document.body).length)
 
 </script>
 

@@ -70,6 +70,8 @@ foo.dispatchEvent('bar')           // caught by listener
 foo.dispatchEvent('baz')           // caught by listener
 foo.dispatchEvent('a-baz-event')   // caught by listener
 foo.off(/bar|baz/, listener)       // cancel (regexp match uses String representation: String(regexp))
+
+foo.on(/./, event => console.log(event.type))     // catch everything, useful for debug
 ```
 
 <br> __Bubbling / propagation__
