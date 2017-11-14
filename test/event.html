@@ -267,6 +267,7 @@ if (!window.hasLoadModule) {
 	src = src.split(/import\W.*/g).pop().trim()
 
 	let script1 = document.createElement('script')
+	script1.setAttribute('type', 'text/javascript')
 	script1.setAttribute('src', 'js/event.js')
 	document.head.appendChild(script1)
 
@@ -275,11 +276,12 @@ if (!window.hasLoadModule) {
 	script1.onload = event => {
 
 		let script2 = document.createElement('script')
+		script2.setAttribute('type', 'text/javascript')
 		script2.innerHTML = src
 		document.head.appendChild(script2)
 
 	}
-	
+
 // }, 200)
 }
 	
