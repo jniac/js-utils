@@ -70,8 +70,17 @@ parent.on('born', event => console.log('a new child is born!', event.target))
 child.dispatchEvent('born', null, { propagateTo: child => child.parent })
 ```
 
+__Cancel event__<br>
+```
+foo.on('an-event', event => console.log(event))
+foo.on('an-event', event => event.cancel(), { priority: 100 })
+foo.dispatchEvent('an-event')		// trigger nothing
+```
+
+
 __Without implement or inherit__<br>
-to propagate an event through a existing tree, nodes tree do not even have to implement eventjs.EventDispatcher
+to propagate an event through a existing tree, nodes tree do not even have to implement eventjs.EventDispatcher:<br>
+on/once/off/dispatchEvent can be called from eventjs directly
 ```
 // e.g. down from <body> to every HTMLElement
 eventjs.on(document.querySelector('#A'), 'an-event', event => console.log(event))

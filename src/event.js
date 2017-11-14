@@ -13,33 +13,41 @@ export class Event {
 
 	constructor(type, options) {
 
-		this.type = type
-		this.options = options
+		Object.defineProperties(this, {
 
-	}
-
-	initTarget(target) {
-
-		Object.defineProperty(this, 'target', { 
-
-			value: target,
+			type: { value: type },
+			options: { value: options },
 
 		})
 
-		Object.defineProperty(this, 'currentTarget', {
+	}
 
-			writable: true,
-			value: target,
+	clone() {
 
-		})
+		let event = new Event(this.type, this.options)
 
-		return this
+		return Object.assign(event, this)
 
 	}
 
-	setCurrentTarget(currentTarget) {
+	initTarget(target, currentTarget = null) {
 
-		this.currentTarget = currentTarget
+		Object.defineProperties(this, {
+
+			target: { 
+			
+				value: target,
+			
+			},
+
+			currentTarget: {
+
+				writable: true,
+				value: currentTarget || target,
+
+			},
+
+		})
 
 		return this
 
@@ -174,9 +182,7 @@ const Prototype = {
 
 			for (let target of targets) {
 
-				let event2 = new Event(event.type, event.options)
-					.initTarget(event.target)
-					.setCurrentTarget(target)
+				let event2 = event.clone().initTarget(event.target, target)
 
 				Prototype.dispatchEvent.call(target, event2, eventParams)
 

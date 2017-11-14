@@ -19,6 +19,7 @@
 		div.tree, div.tree div {
 			padding: 10px;
 		}
+		div.tree span + div,
 		div.tree div + div {
 			margin-top: 10px
 		}
@@ -59,7 +60,7 @@
 <body>
 
 <div class="tree">
-	<div>tree</div>
+	<span>tree</span>
 	<div>
 		<div></div>
 		<div>
@@ -68,11 +69,12 @@
 		</div>
 		<div></div>
 	</div>
-	<div>
+	<div class="B">
+		<span>B</span>
 		<div></div>
 		<div></div>
 		<div>
-			<div class="A">A</div>
+			<div class="A"><span>A</span></div>
 			<div></div>
 		</div>
 	</div>
@@ -184,14 +186,29 @@ fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
 
 // propagation on DOM without implementing EventDispatcher !!!
 
+const presentElement = element => element.tagName.toLowerCase() + (element.className.match(/(\w+)/g) || []).map(v => '.' + v).join('')
+
 // going up the tree ...
-eventjs.on(document.body, /from/, event => log(`type: ${event.type}, target:${event.target}, currentTarget:${event.currentTarget}`))
+eventjs.on(document.body, /from/, event => log(`type: ${event.type}, target: ${presentElement(event.target)}, currentTarget: ${presentElement(event.currentTarget)}`))
 eventjs.dispatchEvent(document.querySelector('.tree .A'), 'from-div.A', null, { 
 	propagateTo: element => element.parentElement,
 })
 
-// ... or going down
-eventjs.on(document.querySelector('.tree .A'), /to/, event => log(`type: ${event.type}, target:${event.target}, currentTarget:${event.currentTarget}`))
+// ... or going down ...
+eventjs.on(document.querySelector('.tree .A'), /to/, event => log(`type: ${event.type}, target: ${presentElement(event.target)}, currentTarget: ${presentElement(event.currentTarget)}`))
+eventjs.on(document.querySelector('.tree .A'), /to/, event => log(`type: ${event.type}, message: ${event.message}`))
+// ... with an interception to add a custom data ...
+eventjs.on(document.querySelector('.tree .B'), /to/, event => event.message = '.B was here!!')
+eventjs.dispatchEvent(document.body, 'to-div.A', null, { 
+	propagateTo: element => element.children,
+})
+// ... with an interception to cancel the event!
+eventjs.on(document.querySelector('.tree .B'), /to/, event => {
+
+	log(`i won't let this event propagate anymore: event.cancel()`)
+	event.cancel()
+
+})
 eventjs.dispatchEvent(document.body, 'to-div.A', null, { 
 	propagateTo: element => element.children,
 })
