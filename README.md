@@ -46,7 +46,7 @@ foo.on('bar', listener)
 foo.on('bar', listener, { priority: 1000 })     // this listener will be called first
 ```
 
-__Max__
+<br> __Max__
 <br> when adding a listener, max option allow to restrict the number of execution
 <br> default value: max = Infinity 
 ```
@@ -55,14 +55,14 @@ foo.on('bar', listener, { max: 1 })
 foo.once('bar', listener)
 ```
 
-__Custom data__
+<br> __Custom data__
 <br>
 ```
 foo.on('bar', event => console.log(event.secret))
 foo.dispatchEvent('bar', { secret: 'baz' })
 ```
 
-__Regexp__
+<br> __Regexp__
 <br>
 ```
 foo.on(/bar|baz/, listener)
@@ -72,7 +72,7 @@ foo.dispatchEvent('a-baz-event')   // caught by listener
 foo.off(/bar|baz/, listener)       // cancel (regexp match uses String representation: String(regexp))
 ```
 
-__Bubbling / propagation__
+<br> __Bubbling / propagation__
 <br> thanks to delegate 'propagateTo' the event know to which object propagate
 <br> _event.target_: a reference to the first object that dispatch the event
 <br> _event.currentTarget_: a reference to the current object that is currently dispatching the event
@@ -88,7 +88,7 @@ branch.on('event' => event.branchMessage = `hello i'm a branch`)
 leave.dispatchEvent('event', null, { propagateTo: node => node.parent })
 ```
 
-__Cancelling an event__
+<br> __Cancelling an event__
 <br> smooth...
 ```
 foo.on('an-event', event => console.log(event))
@@ -97,7 +97,7 @@ foo.dispatchEvent('an-event')		// trigger nothing
 ```
 
 
-__Without implement or inherit__
+<br> __Without implement or inherit__
 <br> to propagate an event through a existing tree, nodes tree do not even have to implement eventjs.EventDispatcher:
 <br> on/once/off/dispatchEvent can be called from eventjs directly
 ```
