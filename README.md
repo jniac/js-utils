@@ -96,6 +96,27 @@ foo.on('an-event', event => event.cancel(), { priority: 100 })
 foo.dispatchEvent('an-event')		// trigger nothing
 ```
 
+<br> __Remap__
+<br> _dispatchEvent_ is already declared on my prototype, can i choose another key ?
+<br> yes you can!
+```
+// remap key one by one
+eventjs.implementEventDispatcher(MyClass.prototype, {
+	remap: {
+		dispatchEvent: 'trigger',
+	},
+})
+myInstance.trigger('an-event')       // do the job!
+```
+_or_
+```
+// remap key witch a callback
+eventjs.implementEventDispatcher(MyClass.prototype, {
+	remap: key => `__${key}__`
+})
+myInstance.__dispatchEvent__('an-event')       // do the job!
+```
+
 
 <br> __Without implement or inherit__
 <br> to propagate an event through a existing tree, tree's nodes do not even have to implement eventjs.EventDispatcher:
