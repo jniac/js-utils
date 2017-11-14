@@ -2,7 +2,7 @@
 Javascript utilies for common needs (events, math, tree etc.)
 
 # event.js
-EventDispatcher that can be herited or implemented:
+EventDispatcher that can be herited or implemented (and even none of that):
 	
 	class Foo extends eventjs.EventDispatcher { ... }
 	 
@@ -42,5 +42,13 @@ Bubbling, propagation through a delegate 'propagateTo'
 	
 	// propagateTo could return any of (null | object | [object])
 	child.dispatchEvent('born', null, { propagateTo: child => child.parent })
+
+	// to propagate an event through a tree, node tree does not even need to implement EventDispatcher
+
+Without implement or inherit:
+	
+	// down from body to every HTMLElement
+	eventjs.on(document.querySelector('#A'), 'an-event', event => console.log(event))
+	eventjs.dispatchEvent(document.body, 'an-event', null, { propagateTo: element => element.children })
 
 test page: [event.html](http://htmlpreview.github.io/?https://github.com/jniac/js-utils/blob/master/test/event.html)  

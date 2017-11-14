@@ -279,3 +279,33 @@ export class EventDispatcher { }
 implementEventDispatcher(EventDispatcher.prototype)
 
 
+
+
+
+export function on(target, type, callback, options) {
+
+	return Shorthands.on.call(target, type, callback, options)
+
+}
+
+export function once(target, type, callback, options) {
+
+	return Shorthands.once.call(target, type, callback, options)
+
+}
+
+export function off(target, type, callback, options) {
+
+	return Shorthands.off.call(target, type, callback, options)
+
+}
+
+export function dispatchEvent(target, type, eventParams, options) {
+
+	return Prototype.dispatchEvent.call(target, type, eventParams, options)
+
+}
+
+
+
+

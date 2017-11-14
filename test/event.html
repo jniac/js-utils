@@ -14,6 +14,29 @@
 		pre, p {
 			margin: 0;
 		}
+
+		div.tree, div.tree div {
+			padding: 10px;
+		}
+		div.tree div + div {
+			margin-top: 10px
+		}
+		div.tree {
+			position: fixed;
+			top: 0;
+			right: 0;
+			margin: 20px;
+			background-color: #A397FF;
+		}
+		div.tree > div {
+			background-color: #EC9AFF;
+		}
+		div.tree > div > div {
+			background-color: #FECDAE;
+		}
+		div.tree > div > div > div {
+			background-color: #B3D6FF;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -33,6 +56,25 @@
 
 </head>
 <body>
+
+<div class="tree">
+	<div>
+		<div></div>
+		<div>
+			<div></div>
+			<div></div>
+		</div>
+		<div></div>
+	</div>
+	<div>
+		<div></div>
+		<div></div>
+		<div>
+			<div class="A"></div>
+			<div></div>
+		</div>
+	</div>
+</div>
 
 <pre style="font-size: 3em; color:#999;">code</pre>
 <pre class="source" style="color:#999;"></pre>
@@ -135,6 +177,22 @@ fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
 fooChild.on('event', event => event.cancel()) // cancel prevent propagation
 fooChild.dispatchEvent('event', null, { propagateTo: target => target.parent })
 
+
+
+
+// propagation on DOM without implementing EventDispatcher !!!
+
+// going up the tree ...
+eventjs.on(document.body, /./, event => log(event.type))
+eventjs.dispatchEvent(document.querySelector('.tree .A'), 'from-div.A', null, { 
+	propagateTo: element => element.parentElement,
+})
+
+// ... or going down
+eventjs.on(document.querySelector('.tree .A'), /./, event => log(event.type))
+eventjs.dispatchEvent(document.body, 'to-div.A', null, { 
+	propagateTo: element => element.children,
+})
 
 
 </script>
