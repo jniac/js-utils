@@ -23,8 +23,8 @@ eventjs.implementEventDispatcher(foo)
 _or_
 ``` 
 let foo = eventjs.implementEventDispatcher({
-	member1: value1,
-	...
+    member1: value1,
+    ...
 })
 ```
 
@@ -93,7 +93,7 @@ leave.dispatchEvent('event', null, { propagateTo: node => node.parent })
 ```
 foo.on('an-event', event => console.log(event))
 foo.on('an-event', event => event.cancel(), { priority: 100 })
-foo.dispatchEvent('an-event')		// trigger nothing
+foo.dispatchEvent('an-event')        // trigger nothing
 ```
 
 <br> __Remap__
@@ -102,9 +102,9 @@ foo.dispatchEvent('an-event')		// trigger nothing
 ```
 // remap key one by one
 eventjs.implementEventDispatcher(MyClass.prototype, {
-	remap: {
-		dispatchEvent: 'trigger',
-	},
+    remap: {
+        dispatchEvent: 'trigger',
+    },
 })
 myInstance.trigger('an-event')       // do the job!
 ```
@@ -112,7 +112,7 @@ _or_
 ```
 // remap key witch a callback
 eventjs.implementEventDispatcher(MyClass.prototype, {
-	remap: key => `__${key}__`
+    remap: key => `__${key}__`
 })
 myInstance.__dispatchEvent__('an-event')       // do the job!
 ```
@@ -132,8 +132,8 @@ eventjs.dispatchEvent(document.body, 'an-event', null, { propagateTo: element =>
 when called from eventjs, on/once/off/dispatchEvent can been invoked for multiple targets (Array, List, anything iterable)
 ```
 eventjs.on(document.querySelectorAll('form'), 'changed', event => {
-	event.currentTarget.classList.add('changed')
-	event.cancel()
+    event.currentTarget.classList.add('changed')
+    event.cancel()
 })
 eventjs.dispatchEvent(document.querySelectorAll('form input'), 'changed')
 ```
