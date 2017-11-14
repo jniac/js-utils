@@ -101,12 +101,20 @@ foo.dispatchEvent('an-event')		// trigger nothing
 <br> to propagate an event through a existing tree, tree's nodes do not even have to implement eventjs.EventDispatcher:
 <br> on/once/off/dispatchEvent can be called from eventjs directly
 <br> alteration: 
-<br> &nbsp;&nbsp;&nbsp;&nbsp; eventjs.on(target, ...) will create an array '\__listeners' on that target
-<br> &nbsp;&nbsp;&nbsp;&nbsp; eventjs.dispatchEvent let everything clean
+<br> -&nbsp;&nbsp;&nbsp;&nbsp; eventjs.on(targets, ...) will create an array '\__listeners' on targets
+<br> -&nbsp;&nbsp;&nbsp;&nbsp; eventjs.dispatchEvent(targets, ...) let everything clean
 ```
 // e.g. down from <body> to every HTMLElement
 eventjs.on(document.querySelector('#A'), 'an-event', event => console.log(event))
 eventjs.dispatchEvent(document.body, 'an-event', null, { propagateTo: element => element.children })
+```
+when called from eventjs, on/once/off/dispatchEvent can been invoked for multiple targets (Array, List, anything iterable)
+```
+eventjs.on(document.querySelectorAll('form'), 'changed', event => {
+	event.currentTarget.classList.add('changed')
+	event.cancel()
+})
+eventjs.dispatchEvent(document.querySelectorAll('form input'), 'changed')
 ```
 
 test page: [event.html](http://htmlpreview.github.io/?https://github.com/jniac/js-utils/blob/master/test/event.html)  

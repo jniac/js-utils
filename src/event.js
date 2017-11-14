@@ -298,29 +298,50 @@ implementEventDispatcher(EventDispatcher.prototype)
 
 
 
+function iterate(target, callback) {
 
+	if (isIterable(target)) {
+
+		for (let object of target)
+			callback(object)
+
+	} else {
+
+		callback(target)
+
+	}
+
+}
 
 export function on(target, type, callback, options) {
 
-	return Shorthands.on.call(target, type, callback, options)
+	iterate(target, object => Shorthands.on.call(object, type, callback, options))
+
+	return target
 
 }
 
 export function once(target, type, callback, options) {
 
-	return Shorthands.once.call(target, type, callback, options)
+	iterate(target, object => Shorthands.once.call(object, type, callback, options))
+
+	return target
 
 }
 
 export function off(target, type, callback, options) {
 
-	return Shorthands.off.call(target, type, callback, options)
+	iterate(target, object => Shorthands.off.call(object, type, callback, options))
+
+	return target
 
 }
 
 export function dispatchEvent(target, type, eventParams, options) {
 
-	return Prototype.dispatchEvent.call(target, type, eventParams, options)
+	iterate(target, object => Prototype.dispatchEvent.call(object, type, eventParams, options))
+
+	return target
 
 }
 

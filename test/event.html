@@ -215,6 +215,9 @@ eventjs.dispatchEvent(document.body, 'to-div.A', null, {
 	propagateTo: element => element.children,
 })
 
+eventjs.on([document.firstElementChild, document.body], 'multiple', event => log(event.type, `${presentElement(event.target)} > ${presentElement(event.currentTarget)}`))
+eventjs.dispatchEvent(document.querySelectorAll('.tree .A, .tree .B'), 'multiple', null, { propagateTo: element => element.parentElement })
+
 
 </script>
 
