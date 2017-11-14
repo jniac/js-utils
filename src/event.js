@@ -301,7 +301,7 @@ const Shorthands = {
 
 	once(type, callback, options = {}) {
 
-		Prototype.addEventListener.call(this, type, callback, Object.assign(option, { max: 1 }))
+		Prototype.addEventListener.call(this, type, callback, Object.assign(options, { max: 1 }))
 
 		return this
 
