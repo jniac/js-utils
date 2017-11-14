@@ -24,8 +24,6 @@ function iterate(target, callback) {
 
 }
 
-
-
 export class Event {
 
 	constructor(type, options) {
@@ -131,20 +129,22 @@ class Listener {
 
 }
 
+export const listenersKey = typeof Symbol === 'undefined' ? '__listeners' : Symbol('listeners')
+
 const Prototype = {
 
 	getListeners({ createIfNull = true, copy = false } = {}) {
 
-		if (!this.__listeners) {
+		if (!this[listenersKey]) {
 
 			if (!createIfNull)
 				return []
 
-			Object.defineProperty(this, '__listeners', { value: [] })
+			Object.defineProperty(this, listenersKey, { value: [] })
 
 		}
 
-		return copy ? this.__listeners.concat() : this.__listeners
+		return copy ? this[listenersKey].concat() : this[listenersKey]
 
 	},
 

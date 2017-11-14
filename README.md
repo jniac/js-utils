@@ -122,8 +122,8 @@ myInstance.__dispatchEvent__('an-event')       // do the job!
 <br> to propagate an event through a existing tree, tree's nodes do not even have to implement eventjs.EventDispatcher:
 <br> on/once/off/dispatchEvent can be called from eventjs directly
 <br> alteration: 
-<br> -&nbsp;&nbsp;&nbsp;&nbsp; eventjs.on(targets, ...) will create an array '\__listeners' on targets
-<br> -&nbsp;&nbsp;&nbsp;&nbsp; eventjs.dispatchEvent(targets, ...) let everything clean
+<br> •&nbsp;&nbsp;&nbsp;&nbsp; eventjs.on(targets, ...) will create an array on targets: target[eventjs.listenersKey]
+<br> •&nbsp;&nbsp;&nbsp;&nbsp; eventjs.dispatchEvent(targets, ...) let everything clean
 ```
 // e.g. down from <body> to every HTMLElement
 eventjs.on(document.querySelector('#A'), 'an-event', event => console.log(event))
