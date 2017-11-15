@@ -1,15 +1,37 @@
+import * as eventjs from './event.js'
+
 class Link {
 
-	constructor(key, value) {
+	constructor(chain, key, value) {
 
+		this.chain = chain
 		this.key = key
-		this.value = value
+		this.__value = value
 
 	}
 
+	setValue(value) {
+
+		if (this.__value === value)
+			return
+
+		console.log(this.__value, value)
+
+		this.__oldValue = this.__value
+		this.__value = value
+
+		this.chain.dispatchEvent('change')
+
+		return this
+
+	}
+
+	get value() { return this.__value }
+	set value(value) { this.setValue(value) }
+
 	toString() {
 
-		return `Link { value: ${this.value} }`
+		return `Link{ value: ${this.value} }`
 
 	}
 
@@ -27,9 +49,11 @@ const relations = {
 
 }
 
-export class Chain {
+export class Chain extends eventjs.EventDispatcher {
 
 	constructor(relation = '*', initialValue = 1) {
+
+		super()
 
 		Object.defineProperties(this, {
 
@@ -74,7 +98,7 @@ export class Chain {
 		if (link)
 			throw `a Link already exist for ${String(key)}`
 
-		link = new Link(key, value)
+		link = new Link(this, key, value)
 
 		this.links.push(link)
 
@@ -108,7 +132,7 @@ export class Chain {
 
 	toString() {
 
-		return `Chain { relation: ${this.relation}, count: ${this.count}, initialValue: ${this.initialValue}, value: ${this.value} }`
+		return `Chain{ relation: ${this.relation}, count: ${this.count}, initialValue: ${this.initialValue}, value: ${this.value} }`
 
 	}
 

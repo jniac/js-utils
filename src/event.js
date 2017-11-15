@@ -76,7 +76,7 @@ export class Event {
 
 	toString() {
 
-		return `Event { type: ${this.type} }`
+		return `Event{ type: ${this.type} }`
 
 	}
 
@@ -179,6 +179,10 @@ const Prototype = {
 	},
 
 	dispatchEvent(eventOrType, eventParams = null, options = null) {
+
+		// skip if listeners have never been associated
+		if (!this[listenersKey])
+			return this
 
 		if (typeof eventOrType === 'string') {
 

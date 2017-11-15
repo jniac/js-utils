@@ -119,6 +119,9 @@ chain.link(this, { value: 7 })
 log(chain.links)
 log(chain)
 
+chain.on('change', event => log(event, chain))
+chain.getLink('foo').setValue(4)
+
 
 
 
