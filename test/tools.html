@@ -105,12 +105,14 @@ window.toolsjs = toolsjs
 
 let chain = new toolsjs.Chain()
 
+log('\nDEFAULT:\n\n')
 chain.link('foo', { value: 3 })
 chain.link(this, { value: 1/2 })
 
 log(chain.links)
 log(chain)
 
+log('\nchange CHAIN relation:\n\n')
 chain.relation = '+'
 chain.initialValue = 0
 log(chain)
@@ -119,9 +121,23 @@ chain.link(this, { value: 7 })
 log(chain.links)
 log(chain)
 
+
+
+log('\nevents:\n\n')
+
 chain.on('change', event => log(event, chain))
+log('foo link\'s value: 4')
 chain.getLink('foo').setValue(4)
 
+
+
+log('\nchange LINK relation:\n\n')
+log('add 3rd link')
+chain.link('bar', { value: 5, relation: '*' })
+log(chain.links)
+log('\nchange the 3rd link relation')
+chain.link('bar', { relation: '**' })
+log(chain.links)
 
 
 

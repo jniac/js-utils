@@ -2,23 +2,41 @@ import * as eventjs from './event.js'
 
 class Link {
 
-	constructor(chain, key, value) {
+	constructor(chain, key, { value, relation }) {
 
 		this.chain = chain
 		this.key = key
+
 		this.__value = value
+		this.__relation = relation
 
 	}
 
-	setValue(value) {
+	set({ value, relation }) {
 
-		if (this.__value === value)
+		this.setValue(value, false)
+		this.setRelation(relation, false)
+
+		if (this.changed) {
+
+			this.changed = false
+			this.chain.dispatchEvent('change') 
+
+		}
+
+		return this
+
+	}
+
+	setValue(value, dispatchEvent = true) {
+
+		if (value === undefined || this.__value === value)
 			return
 
 		this.__oldValue = this.__value
 		this.__value = value
 
-		this.chain.dispatchEvent('change')
+		dispatchEvent ? this.chain.dispatchEvent('change') : this.changed = true
 
 		return this
 
@@ -27,9 +45,25 @@ class Link {
 	get value() { return this.__value }
 	set value(value) { this.setValue(value) }
 
+	setRelation(value, dispatchEvent = true) {
+
+		if (value === undefined || this.__relation === value)
+			return
+
+		this.__relation = value
+
+		dispatchEvent ? this.chain.dispatchEvent('change') : this.changed = true
+
+		return this
+
+	}
+
+	get relation() { return this.__relation }
+	set relation(value) { this.setRelation(value) }
+
 	toString() {
 
-		return `Link{ value: ${this.value} }`
+		return `Link{ value: ${this.value} ${this.relation ? `relation: ${this.relation} ` : ''}}`
 
 	}
 
@@ -39,10 +73,13 @@ const clamp = x => x < 0 ? 0 : x > 1 ? 1 : x
 
 const relations = {
 
-	'*': (a, b) => a * b,
-	'+': (a, b) => a + b,
 	'&&': (a, b) => a && b,
 	'||': (a, b) => a || b,
+	'+': (a, b) => a + b,
+	'-': (a, b) => a - b,
+	'*': (a, b) => a * b,
+	'/': (a, b) => a / b,
+	'**': (a, b) => a ** b,
 	'clamp(*)': (a, b) => clamp(a * b),
 
 }
@@ -71,7 +108,7 @@ export class Chain extends eventjs.EventDispatcher {
 		let value = this.initialValue
 
 		for (let link of this.links)
-			value = relations[this.relation](value, link.value)
+			value = relations[link.relation || this.relation](value, link.value)
 
 		return value
 
@@ -89,32 +126,38 @@ export class Chain extends eventjs.EventDispatcher {
 
 	}
 
-	createLink(key, value) {
+	createLink(key, linkSettings) {
 
 		let link = this.searchLink(key)
 
 		if (link)
 			throw `a Link already exist for ${String(key)}`
 
-		link = new Link(this, key, value)
+		link = new Link(this, key, linkSettings)
 
 		this.links.push(link)
 
 		this.count++
 
+		this.dispatchEvent('change')
+
 		return link
 
 	}
 
-	getLink(key, { createIfNull = true, value } = {}) {
+	getLink(key, { createIfNull = true, value, relation } = {}) {
 
 		let link = this.searchLink(key)
 
-		if (!link && createIfNull)
-			link = this.createLink(key)
+		if (!link && createIfNull) {
 
-		if (link && value !== undefined)
-			link.value = value
+			link = this.createLink(key, { value, relation })
+			
+		} else if (link) {
+
+			link.set({ value, relation })
+
+		}
 
 		return link
 
