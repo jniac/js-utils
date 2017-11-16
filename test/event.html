@@ -98,7 +98,6 @@
 
 
 
-
 import * as eventjs from '../src/event.js'
 
 window.eventjs = eventjs
@@ -179,6 +178,8 @@ bar.__X__barDispatchEvent('is-there-anybody?')
 
 // propagation
 
+log('\nPROPAGATION:\n\n')
+
 let fooParent = new eventjs.EventDispatcher()
 let fooChild = new eventjs.EventDispatcher()
 
@@ -222,13 +223,16 @@ eventjs.dispatchEvent(document.body, 'to-div.A', null, {
 	propagateTo: element => element.children,
 })
 
+log('\ntrough DOM:\n\n')
+
 eventjs.on([document.firstElementChild, document.body], 'multiple', event => log(event.type, `${presentElement(event.target)} > ${presentElement(event.currentTarget)}`))
 eventjs.dispatchEvent(document.querySelectorAll('.tree .A, .tree .B'), 'multiple', null, { propagateTo: element => element.parentElement })
 
 
 
-// clear
-log('\nclear:')
+// CLEAR
+log('\nCLEAR:\n\n')
+
 foo = new eventjs.EventDispatcher()
 log('foo listen "bar" & "baz"')
 foo.on('bar', event => log(event.type))
@@ -251,7 +255,14 @@ log('eventjs.getEventListeners(document.body).length:', eventjs.getEventListener
 
 import '../src/event.js'
 
-document.querySelector('pre.source').innerHTML = document.querySelector('script.source').innerText.trim()
+let moduleSrc = document.querySelector('script.source').innerText.trim()
+
+let script = document.createElement('script')
+script.setAttribute('type', 'module')
+script.innerHTML = moduleSrc
+document.head.appendChild(script)
+
+document.querySelector('pre.source').innerHTML = moduleSrc
 
 window.hasLoadModule = true
 	
@@ -259,32 +270,38 @@ window.hasLoadModule = true
 
 <script type="text/javascript">
 
-if (!window.hasLoadModule) {
-// setTimeout(function() {
+setTimeout(function() {
 
-	var src = document.querySelector('script.source').innerText.trim()
+	if (!window.hasLoadModule) {
 
-	src = src.split(/import\W.*/g).pop().trim()
+		var src = document.querySelector('script.source').innerText.trim()
 
-	let script1 = document.createElement('script')
-	script1.setAttribute('type', 'text/javascript')
-	// script1.setAttribute('src', 'js/event.js')
-	script1.setAttribute('src', 'https://rawgit.com/jniac/js-utils/master/test/js/event.js')
-	document.head.appendChild(script1)
+		src = src.split(/import\W.*/g).pop().trim()
 
-	document.querySelector('pre.source').innerHTML = src
+		let script1 = document.createElement('script')
+		script1.setAttribute('type', 'text/javascript')
+		// script1.setAttribute('src', 'js/event.js')
+		script1.setAttribute('src', 'https://rawgit.com/jniac/js-utils/master/test/js/event.js')
+		document.head.appendChild(script1)
 
-	script1.onload = event => {
+		document.querySelector('pre.source').innerHTML = src
 
-		let script2 = document.createElement('script')
-		script2.setAttribute('type', 'text/javascript')
-		script2.innerHTML = src
-		document.head.appendChild(script2)
+		script1.onload = event => {
+
+			let script2 = document.createElement('script')
+			script2.setAttribute('type', 'text/javascript')
+			script2.innerHTML = src
+			document.head.appendChild(script2)
+
+		}
+
+	} else {
+
+		console.log(`es6 module are running!`)
 
 	}
 
-// }, 200)
-}
+}, 200)
 	
 </script>
 

@@ -15,8 +15,6 @@ class Link {
 		if (this.__value === value)
 			return
 
-		console.log(this.__value, value)
-
 		this.__oldValue = this.__value
 		this.__value = value
 
@@ -108,14 +106,14 @@ export class Chain extends eventjs.EventDispatcher {
 
 	}
 
-	getLink(key, { createIfNull = true, value = null } = {}) {
+	getLink(key, { createIfNull = true, value } = {}) {
 
 		let link = this.searchLink(key)
 
 		if (!link && createIfNull)
 			link = this.createLink(key)
 
-		if (link && value)
+		if (link && value !== undefined)
 			link.value = value
 
 		return link

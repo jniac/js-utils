@@ -180,8 +180,8 @@ const Prototype = {
 
 	dispatchEvent(eventOrType, eventParams = null, options = null) {
 
-		// skip if listeners have never been associated
-		if (!this[listenersKey])
+		// skip if listeners have never been associated AND event will not propagate
+		if (!this[listenersKey] && (!options || !options.propagateTo) && (!eventOrType.options || !eventOrType.options.propagateTo))
 			return this
 
 		if (typeof eventOrType === 'string') {
