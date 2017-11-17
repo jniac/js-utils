@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "ssh-add": "ssh-add ~/.ssh/id_rsa",
-    "test": "quick-static auto",
+    "test": "super-quick-static auto",
     "build": "rollup src/event.js --format iife --name 'eventjs' | babel --es2015 -o test/js/event.js",
     "rollup-chain": "rollup src/tools.js -f es -o build/modules/tools.js",
     "end": null
