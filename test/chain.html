@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>event.js tests</title>
+	
+	<style type="text/css">
+		html {
+			background-color: #eee;
+		}
+		body {
+			margin: 0;
+			padding: 30px;
+			font-family: monospace;
+		}
+		pre, p {
+			margin: 0;
+			white-space: pre-wrap;
+		}
+
+		div.content {
+			width: calc(100% - 200px);
+		}
+
+		div.tree, div.tree div {
+			padding: 10px;
+		}
+		div.tree span + div,
+		div.tree div + div {
+			margin-top: 10px
+		}
+		div.tree {
+			position: fixed;
+			top: 0;
+			right: 0;
+			margin: 20px;
+			background-color: #A397FF;
+		}
+		div.tree > div {
+			background-color: #EC9AFF;
+		}
+		div.tree > div > div {
+			background-color: #FECDAE;
+		}
+		div.tree > div > div > div {
+			background-color: #B3D6FF;
+		}
+	</style>
+
+	<script type="text/javascript">
+		
+		function log() {
+
+			console.log.apply(null, arguments)
+
+			let p = document.createElement('p')
+			p.innerText = [...arguments].join(' ')
+
+			document.body.querySelector('pre.console').appendChild(p)
+
+		}
+
+	</script>
+
+</head>
+<body>
+
+<div class='content'>
+	<pre style="font-size: 3em; color:#999;">code</pre>
+	<pre class="source" style="color:#999;"></pre>
+	<br>
+	<pre style="font-size: 3em">console</pre>
+	<pre class="console"></pre>
+</div>
+
+<script class="source" type="module">
+
+
+
+
+
+import * as chainjs from '../src/chain.js'
+
+window.chainjs = chainjs
+
+let chain = new chainjs.Chain()
+
+log('\nDEFAULT:\n\n')
+chain.link('foo', { value: 3 })
+chain.link(window, { value: 1/2 })
+
+log(chain.links)
+log(chain)
+
+log('\nchange CHAIN relation:\n\n')
+chain.relation = '+'
+chain.initialValue = 0
+log(chain)
+
+chain.link(window, { value: 7 })
+log(chain.links)
+log(chain)
+
+
+
+log('\nevents:\n\n')
+
+chain.on('change', event => log(event, chain, chain.getEvalString()))
+log('foo link\'s value: 4')
+chain.getLink('foo').value = 4
+chain.initialValue = 3
+chain.initialValue = 3	// no events
+
+
+
+log('\nLINK relation:\n\n')
+log('add 3rd link')
+chain.link('bar', { value: 5, relation: '*' })
+log(chain.links)
+log('\nchange the 3rd link relation')
+chain.link('bar', { relation: '**' })
+log(chain.links)
+
+log('\nLINK authority:\n\n')
+log('add 4th link')
+chain.link('4th', { value: 1, relation: '&&' })
+log('change authority (-1)')
+chain.link('4th', { authority: -1 })
+log(chain.links)
+chain.link('foo', { authority: 10 })
+chain.link(window, { authority: Infinity })
+log(chain.links)
+
+log(`${chain.getEvalString()} ≈≈≈ ${chain.value}`)
+
+log('\nCHAIN discretion:\n\n')
+chain.link('4th', { value: 3, relation: '/' })
+log('... (even if links changed, since the chain value remained the same: no events)')
+log(`${chain.getEvalString()} ≈≈≈ ${chain.value}`)
+chain.link(window, { value: 8 ** (1/5), authority: -1, relation: '*' })
+log(`${chain.getEvalString()} ≈≈≈ ${chain.value}`)
+log(`(the computed value is ${chain.computeValue()}, but numerical changes are tested with Chain.epsilon (${chainjs.Chain.epsilon}) )`)
+
+
+
+</script>
+
+<script type="module">
+
+document.querySelector('pre.source').innerText = document.querySelector('script.source').innerText.trim()
+	
+</script>
+
+<!-- <script type="text/javascript" src="event.js"></script>
+<script type="text/javascript"></script> -->
+
+</body>
+</html>

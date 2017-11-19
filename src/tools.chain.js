@@ -73,6 +73,7 @@ const clamp = x => x < 0 ? 0 : x > 1 ? 1 : x
 
 const relations = {
 
+	'=': (a, b) => b,
 	'&&': (a, b) => a && b,
 	'||': (a, b) => a || b,
 	'+': (a, b) => a + b,
@@ -114,6 +115,12 @@ export class Chain extends eventjs.EventDispatcher {
 
 	}
 
+	watchChange() {
+
+
+
+	}
+
 	get value() { return this.getValue() }
 
 	searchLink(key) {
@@ -152,7 +159,7 @@ export class Chain extends eventjs.EventDispatcher {
 		if (!link && createIfNull) {
 
 			link = this.createLink(key, { value, relation })
-			
+
 		} else if (link) {
 
 			link.set({ value, relation })
