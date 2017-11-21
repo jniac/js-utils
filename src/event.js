@@ -207,7 +207,17 @@ const Prototype = {
 
 		let event = typeof eventOrType === 'string' ? new Event(eventOrType, options).initTarget(this) : eventOrType
 
-		Object.assign(event, eventParams)
+		for (let k in eventParams) {
+
+			if (k === 'target' || 
+				k === 'currentTarget' ||
+				k === 'type'
+				k === 'options')
+				continue
+
+			event[k] = eventParams[k]
+
+		}
 
 		for (let listener of Prototype.getEventListeners.call(this, { copy: true, createIfNull: false })) {
 
