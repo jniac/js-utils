@@ -145,7 +145,7 @@ export const listenersKey = typeof Symbol === 'undefined' ? '__listeners' : Symb
 
 const Prototype = {
 
-	getEventListeners({ createIfNull = false, copy = false } = {}) {
+	getEventListeners({ createIfNull = false, copy = false, type = null } = {}) {
 
 		if (!this[listenersKey]) {
 
@@ -160,6 +160,12 @@ const Prototype = {
 			})
 
 		}
+
+		if (type && typeof type === 'string')
+			return this[listenersKey].filter(listener => listener.type === type)
+
+		if (type && (type) instanceof RegExp)
+			return this[listenersKey].filter(listener => type.test(listener.type))
 
 		return copy ? this[listenersKey].concat() : this[listenersKey]
 
