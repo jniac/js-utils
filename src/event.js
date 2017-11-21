@@ -211,7 +211,7 @@ const Prototype = {
 
 			if (k === 'target' || 
 				k === 'currentTarget' ||
-				k === 'type'
+				k === 'type' ||
 				k === 'options')
 				continue
 
