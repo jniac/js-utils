@@ -225,8 +225,8 @@ eventjs.dispatchEvent(document.body, 'to-div.A', null, {
 
 log('\ntrough DOM:\n\n')
 
-eventjs.on([document.firstElementChild, document.body], 'multiple', event => log(event.type, `${presentElement(event.target)} > ${presentElement(event.currentTarget)}`))
-eventjs.dispatchEvent(document.querySelectorAll('.tree .A, .tree .B'), 'multiple', null, { propagateTo: element => element.parentElement })
+eventjs.on([document.firstElementChild, document.body], /multiple/, event => log(event.type, `${presentElement(event.target)} > ${presentElement(event.currentTarget)}`))
+eventjs.dispatchEvent(document.querySelectorAll('.tree .A, .tree .B'), 'multiple-1 multiple-2', null, { propagateTo: element => element.parentElement })
 
 
 

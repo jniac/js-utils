@@ -191,7 +191,7 @@ const Prototype = {
 			if (events.length > 1) {
 
 				for (let v of events)
-					Prototype.dispatchEvent.call(this, v, eventParams)
+					Prototype.dispatchEvent.call(this, v, eventParams, options)
 
 				return this
 
