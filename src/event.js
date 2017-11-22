@@ -113,7 +113,15 @@ class EventListener {
 
 	call(event) {
 
-		this.callback.call(this.thisArg, event)
+		try {
+
+			this.callback.call(this.thisArg, event)
+
+		} catch(e) {
+
+			console.error(e)
+
+		}
 
 		if (++this.count >= this.maxCount)
 			this.kill()
