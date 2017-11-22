@@ -252,6 +252,7 @@ const Prototype = {
 
 				// if there's only one target (targets is not iterable)
 				// the same event is recycled
+				event.currentTarget = targets
 				Prototype.dispatchEvent.call(targets, event)
 
 			} else {
