@@ -194,6 +194,9 @@ const Prototype = {
 
 	dispatchEvent(eventOrType, eventParams = null, options = null) {
 
+		if (this === null)
+			throw 'EventDispatcher.dispatchEvent(): cannot dispatch event from null'
+
 		// skip if listeners have never been associated AND event will not propagate
 		if (!this[listenersKey] && (!options || !options.propagateTo) && (!eventOrType.options || !eventOrType.options.propagateTo))
 			return this
@@ -204,8 +207,8 @@ const Prototype = {
 
 			if (events.length > 1) {
 
-				for (let v of events)
-					Prototype.dispatchEvent.call(this, v, eventParams, options)
+				for (let event of events)
+					Prototype.dispatchEvent.call(this, event, eventParams, options)
 
 				return this
 
@@ -245,14 +248,23 @@ const Prototype = {
 
 			let targets = event.options.propagateTo(event.currentTarget) || []
 
-			if (!isIterable(targets))
-				targets = [targets]
+			if (!isIterable(targets)) {
 
-			for (let target of targets) {
+				// if there's only one target (targets is not iterable)
+				// the same event is recycled
+				Prototype.dispatchEvent.call(targets, event)
 
-				let event2 = event.clone().initTarget(event.target, target)
+			} else {
 
-				Prototype.dispatchEvent.call(target, event2, eventParams)
+				// else there are multiple targets (targets is an Array, NodeList wathever...)
+				// the orginal event is clone to be dispatched to each target
+				for (let target of targets) {
+
+					let event2 = event.clone().initTarget(event.target, target)
+
+					Prototype.dispatchEvent.call(target, event2, eventParams)
+
+				}
 
 			}
 
