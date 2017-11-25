@@ -237,7 +237,7 @@ export class Color {
 
 		if (typeof color === 'string') {
 
-			if (/\w+/.test())
+			if (/^\w+$/.test(color))
 				color = csscolors[color]
 
 			if (color[0] === '#') {
