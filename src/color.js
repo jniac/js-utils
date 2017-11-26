@@ -1,4 +1,4 @@
-let csscolors = {
+export let CSS = {
 
 	aliceblue: '#f0f8ff',
 	antiquewhite: '#faebd7',
@@ -208,7 +208,7 @@ export class Color {
 	
 	constructor() {
 
-		this.set(1, 1, 1, 1)
+		this.setRGBA(1, 1, 1, 1)
 		this.set(...arguments)
 
 	}
@@ -230,7 +230,25 @@ export class Color {
 
 	}
 
-	set(color) {
+	/**
+	 * Possibilities:
+	 *
+	 *   set('white')
+	 *   set('#fff')
+	 *   set('#ffffff')
+	 *   set('rgb(255, 255, 255)')
+	 *   set('rgba(255, 255, 255, 1)')
+	 *   set(1, 1, 1)
+	 *   set(1, 1, 1, 1)
+	 *
+	 *   set('white', .53)
+	 *   set('#fff8')
+	 *   set('#ffffff88')
+	 *   set('rgba(255, 255, 255, .53)')
+	 *   set(1, 1, 1, .53)
+	 *
+	 */
+	set(color, alpha = 1) {
 
 		if (color instanceof Color)
 			return this.copy(color)
@@ -238,20 +256,20 @@ export class Color {
 		if (typeof color === 'string') {
 
 			if (/^\w+$/.test(color))
-				color = csscolors[color]
+				color = CSS[color]
 
 			if (color[0] === '#') {
 
 				color = color.slice(1)
 
 				if (color.length === 3)
-					return this.setRGB(...color.split('').map(v => Number('0x' + v) / 0xf))
+					return this.setRGBA(...color.split('').map(v => Number('0x' + v) / 0xf), alpha)
 
 				if (color.length === 4)
 					return this.setRGBA(...color.split('').map(v => Number('0x' + v) / 0xf))
 
 				if (color.length === 6)
-					return this.setRGB(...color.match(/.{2}/g).map(v => Number('0x' + v) / 0xff))
+					return this.setRGBA(...color.match(/.{2}/g).map(v => Number('0x' + v) / 0xff), alpha)
 
 				if (color.length === 8)
 					return this.setRGBA(...color.match(/.{2}/g).map(v => Number('0x' + v) / 0xff))
@@ -463,9 +481,9 @@ export function randomColor(color1, color2) {
 
 }
 
-export function get(color) {
+export function get() {
 
-	return new Color(color)
+	return new Color(...arguments)
 
 }
 
