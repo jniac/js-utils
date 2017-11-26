@@ -130,18 +130,18 @@ bar.dispatchEvent('foo')
 export let bar2 = {}
 
 // remap keys, forgot one (addEventListener)
-eventjs.implementEventDispatcher(bar2, {
+eventjs.implementEventDispatcher(bar2, { remap: {
 
 	on: 'ON',
 	off: 'OFF',
 	dispatchEvent: 'TRIGGER',
 	addEventListener: null,
 
-})
+} })
 
 bar2.ON(/foo/, function(event) {
 
-	console.log(event.type, this)
+	console.log('remap', event.type, this)
 
 })
 
@@ -149,7 +149,7 @@ bar2.TRIGGER('foo-2')
 
 
 
-let bar3 = eventjs.implementEventDispatcher({}, k => `__${k}__`)
+let bar3 = eventjs.implementEventDispatcher({}, { remap: k => `__${k}__` })
 
 bar3.__on__('¯\\_(ツ)_/¯', event => console.log(event.type))
 
@@ -165,13 +165,23 @@ bar3.__dispatchEvent__('¯\\_(ツ)_/¯')
 
 // THISARG, ARGUMENTS
 
-class Show {}
+class Show {
 
-foo.on('BAR', function(event, lyrics, lyrics2) {
+	constructor() {
 
-	console.log(this, lyrics, lyrics2, event.type)
+		foo.on('BAR', this.onBar, { thisArg: this, args: ['me the way to the next', 'whisky'] })
 
-}, { thisArg: new Show, args: ['me the way to the next', 'whisky'] })
+	}
+
+	onBar(event, lyrics, lyrics2) {
+
+		console.log(this, lyrics, lyrics2, event.type)
+
+	}
+
+}
+
+new Show()
 
 foo.dispatchEvent('BAR')
 foo.dispatchEvent('BAR')

@@ -210,7 +210,18 @@ class Event {
 
 		options = Object.assign({}, EventOptions, options)
 
-		Object.defineProperty(this, 'target', { value: target })
+		Object.defineProperty(this, 'target', { 
+
+			value: target,
+
+		})
+
+		Object.defineProperty(this, 'currentTarget', { 
+
+			writable: true,
+			value: target,
+
+		})
 
 		Object.defineProperty(this, 'type', { value: type })
 
@@ -385,11 +396,11 @@ Object.assign(EventDispatcher.prototype, EventDispatcherPrototype)
 
 
 
-export function implementEventDispatcher(target, remap = null) {
+export function implementEventDispatcher(target, { remap = null } = {}) {
 
 	for (let key in EventDispatcherPrototype) {
 
-		let remapKey = remap ? (typeof remap === 'object' ? remap[key] : remap(key)) : key
+		let remapKey = remap ? (typeof remap === 'object' ? (remap[key] || key) : remap(key)) : key
 
 		if (remapKey)
 			Object.defineProperty(target, remapKey, { value: EventDispatcherPrototype[key] })
