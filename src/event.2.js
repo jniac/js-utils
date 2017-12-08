@@ -39,7 +39,7 @@ export function getAllListeners(target, createMode = false) {
 
 }
 
-export function getListenersMatching(target, type, callback = null) {
+export function getListenersMatching(target, type, callback = null, options = null) {
 
 	let listeners = weakmap.get(target)
 
@@ -49,7 +49,7 @@ export function getListenersMatching(target, type, callback = null) {
 	let result = []
 
 	for (let listener of listeners)
-		if (listener.match(type, callback))
+		if (listener.match(type, callback, options))
 			result.push(listener)
 
 	return result
@@ -92,7 +92,7 @@ export function once(target, type, callback, options = { }) {
 
 }
 
-export function removeEventListener(target, type, callback = null) {
+export function removeEventListener(target, type, callback = null, options = { }) {
 
 	if (isIterable(target)) {
 
@@ -112,7 +112,7 @@ export function removeEventListener(target, type, callback = null) {
 
 	}
 
-	for (let listener of getListenersMatching(target, type, callback))
+	for (let listener of getListenersMatching(target, type, callback, options))
 		listener.kill()
 
 	return target
@@ -277,7 +277,17 @@ class Listener {
 
 	}
 
-	match(str, callback = null) {
+	match(str, callback = null, options = null) {
+
+		if (options !== null && this.match(str, callback)) {
+
+			for (let k in options)
+				if (this[k] !== options[k])
+					return false
+
+			return true
+
+		}
 
 		if (callback !== null)
 			return this.match(str) && this.callback === callback
@@ -359,15 +369,15 @@ let EventDispatcherPrototype = {
 
 	},
 
-	removeEventListener(type, callback = undefined) { 
+	removeEventListener(type, callback = undefined, options = undefined) { 
 
-		return removeEventListener(this, type, callback) 
+		return removeEventListener(this, type, callback, options) 
 
 	},
 
-	off(type, callback = undefined) { 
+	off(type, callback = undefined, options = undefined) { 
 
-		return removeEventListener(this, type, callback) 
+		return removeEventListener(this, type, callback, options) 
 
 	},
 

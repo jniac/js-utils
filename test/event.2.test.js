@@ -9,6 +9,20 @@ function log() {
 
 }
 
+// TODO: checklist
+/*
+on:
+	once, on(..., { max: n })
+	on('event1 event2')
+	on(regexp)
+	eventjs.on([array])
+off:
+	off(type)
+	off(type, callback)
+	off(type, callback, option)
+*/
+
+
 
 
 

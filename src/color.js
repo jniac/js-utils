@@ -405,7 +405,7 @@ export class Color {
 
 	getRGBString() {
 
-		return `rgb(${this.r255}, ${this.g255}, ${this.b255}})`
+		return `rgb(${this.r255}, ${this.g255}, ${this.b255})`
 
 	}
 
