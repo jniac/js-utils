@@ -1,426 +1,426 @@
+/**
+ * event.js module
+ * a very permissive event module, with great options
+ * second version built on WeakMap
+ * inspired by jQuery (chaining, iterations), express (flexibility) etc.
+ */
 
-// js-utils
-// event.js
-// https://github.com/jniac/js-utils
+const isIterable = obj => obj ? (typeof obj[Symbol.iterator] === 'function') : false
 
-function isIterable(obj) {
+const whitespace = obj => typeof obj === 'string' && /\s/.test(obj)
 
-	return obj && Symbol && typeof obj[Symbol.iterator] === 'function'
+let weakmap = new WeakMap()
+
+export let weakmapCount = 0
+
+function createListenersArray(target) {
+
+	let listeners = []
+
+	weakmap.set(target, listeners)
+
+	weakmapCount++
+
+	return listeners
 
 }
 
-function iterate(target, callback) {
+function deleteListenersArray(target) {
+
+	weakmap.delete(target)
+
+	weakmapCount--
+
+}
+
+export function getAllListeners(target, createMode = false) {
+
+	return weakmap.get(target) || (createMode ? createListenersArray(target) : null)
+
+}
+
+export function getListenersMatching(target, type, callback = null, options = null) {
+
+	let listeners = weakmap.get(target)
+
+	if (!listeners)
+		return []
+
+	let result = []
+
+	for (let listener of listeners)
+		if (listener.match(type, callback, options))
+			result.push(listener)
+
+	return result
+
+}
+
+export function addEventListener(target, type, callback, options = undefined) {
 
 	if (isIterable(target)) {
 
-		for (let object of target)
-			callback(object)
+		for (let element of target)
+			addEventListener(element, type, callback, options)
 
-	} else {
-
-		callback(target)
+		return target
 
 	}
+
+	if (whitespace(type)) {
+
+		for (let sub of type.split(/\s/))
+			addEventListener(target, sub, callback, options)
+
+		return target
+
+	}
+
+	let listener = new Listener(getAllListeners(target, true), type, callback, options)
+
+	return target
 
 }
 
-export class Event {
+export { addEventListener as on }
 
-	constructor(type, options) {
+export function once(target, type, callback, options = { }) {
 
-		Object.defineProperties(this, {
+	options.max = 1
 
-			type: { value: type },
-			options: { value: options },
+	return addEventListener(target, type, callback, options)
 
-		})
+}
+
+export function removeEventListener(target, type, callback = null, options = { }) {
+
+	if (isIterable(target)) {
+
+		for (let element of target)
+			removeEventListener(element, type, callback)
+
+		return target
 
 	}
 
-	clone() {
+	if (whitespace(type)) {
 
-		let event = new Event(this.type, this.options)
+		for (let sub of type.split(/\s/))
+			removeEventListener(target, type, callback)
 
-		return Object.assign(event, this)
+		return target
 
 	}
 
-	initTarget(target, currentTarget = null) {
+	for (let listener of getListenersMatching(target, type, callback, options))
+		listener.kill()
 
-		Object.defineProperties(this, {
+	return target
 
-			target: { 
-			
-				value: target,
-			
-			},
+}
 
-			currentTarget: {
+export { removeEventListener as off }
 
-				writable: true,
-				value: currentTarget || target,
+export function clearEventListener(target) {
 
-			},
+	let listeners = weakmap.get(target)
+
+	if (!listeners)
+		return target
+
+	while(listeners.length)
+		listeners.pop().kill()
+
+	deleteListenersArray(target)
+
+	return target
+
+}
+
+export function dispatchEvent(target, event, eventOptions = null) {
+
+	if (!target)
+		return null
+
+	if (isIterable(target)) {
+
+		for (let element of target)
+			dispatchEvent(element, event, eventOptions)
+
+		return target
+
+	}
+
+	if (typeof event === 'string') {
+
+		if (whitespace(event)) {
+
+			for (let sub of event.split(/\s/))
+				dispatchEvent(target, sub, eventOptions)
+
+			return target
+
+		}
+
+		return dispatchEvent(target, new Event(target, event, eventOptions))
+
+	}
+
+
+
+	event.currentTarget = target
+
+	let listeners = getListenersMatching(target, event.type).sort((A, B) => B.priority - A.priority)
+
+	for (let listener of listeners) {
+
+		listener.call(event)
+
+		if (event.canceled)
+			break
+
+	}
+
+	if (event.propagateTo)
+		dispatchEvent(event.propagateTo(event.currentTarget), event)
+
+	return target
+
+}
+
+
+
+
+
+
+
+
+
+const EventOptions = {
+
+	cancelable: true,
+	priority: 0,
+	propagateTo: null,
+
+}
+
+class Event {
+
+	constructor(target, type, options) {
+
+		options = Object.assign({}, EventOptions, options)
+
+		Object.defineProperty(this, 'target', { 
+
+			value: target,
 
 		})
 
-		return this
+		Object.defineProperty(this, 'currentTarget', { 
+
+			writable: true,
+			value: target,
+
+		})
+
+		Object.defineProperty(this, 'type', { value: type })
+
+		for (let k in options) {
+
+			Object.defineProperty(this, k, { 
+				
+				enumerable: k in EventOptions,
+				value: options[k],
+
+			})
+
+		}
+
+		Object.defineProperty(this, 'canceled', {
+
+			writable: this.cancelable,
+			value: false,
+
+		})
 
 	}
 
 	cancel() {
 
-		this.canceled = true
-
-	}
-
-	toString() {
-
-		return `Event{ type: ${this.type} }`
+		if (this.cancelable)
+			this.canceled = true
 
 	}
 
 }
 
-class EventListener {
 
-	constructor(eventDispatcher, type, callback, priority, maxCount, thisArg) {
 
-		this.eventDispatcher = eventDispatcher
+
+
+class Listener {
+
+	constructor(array, type, callback, options = undefined) {
+
+		this.count = 0
+
+		this.array = array
+		this.array.push(this)
+
+		this.enabled = true
+		this.priority = 0
+
+		Object.assign(this, options)
+
 		this.type = type
 		this.callback = callback
-		this.priority = priority
-		this.maxCount = maxCount
-		this.thisArg = thisArg
-		this.count = 0
 
 	}
 
-	test(type) {
+	match(str, callback = null, options = null) {
 
-		if (this.disabled)
-			return false
+		if (options !== null && this.match(str, callback)) {
 
-		if (type === 'all')
+			for (let k in options)
+				if (this[k] !== options[k])
+					return false
+
 			return true
 
-		if (this.type instanceof RegExp)
-			return this.type.test(type)
+		}
 
-		return this.type === type
+		if (callback !== null)
+			return this.match(str) && this.callback === callback
+
+		if (this.type instanceof RegExp)
+			return this.type.test(str)
+
+		if (this.type instanceof Array)
+			return this.type.indexOf(str) !== -1
+
+		if (typeof this.type === 'function')
+			return this.type(str)
+
+		return this.type === str
 
 	}
 
 	call(event) {
 
-		try {
+		this.callback.call(this.thisArg || event.currentTarget, event, ...(this.args || []))
 
-			this.callback.call(this.thisArg, event)
+		this.count++
 
-		} catch(e) {
-
-			console.error(e)
-
-		}
-
-		if (++this.count >= this.maxCount)
+		if (this.count === this.max)
 			this.kill()
 
 	}
 
 	kill() {
 
-		for (let k in this)
-			delete this[k]
+		let index = this.array.indexOf(this)
+
+		this.array.splice(index, 1)
+
+		delete this.array
+		delete this.type
+		delete this.callback
+		delete this.options
 
 	}
 
-	isKilled() {
-
-		return !this.eventDispatcher && !this.type && !this.callback
-
-	}
-
-	toString() {
-
-		return `EventListener { type: ${this.type}, priority: ${this.priority}, count: ${this.count} }`
-		
-	}
-
 }
 
-export const listenersKey = typeof Symbol === 'undefined' ? '__listeners' : Symbol('eventListeners')
 
-const Prototype = {
 
-	getEventListeners({ createIfNull = false, copy = false, type = null } = {}) {
 
-		if (!this[listenersKey]) {
 
-			if (!createIfNull)
-				return []
 
-			Object.defineProperty(this, listenersKey, { 
 
-				configurable: true,
-				value: [],
+let EventDispatcherPrototype = {
 
-			})
+	getAllListeners(createMode = false) {
 
-		}
-
-		if (type && typeof type === 'string')
-			return this[listenersKey].filter(listener => listener.type === type)
-
-		if (type && (type) instanceof RegExp)
-			return this[listenersKey].filter(listener => type.test(listener.type))
-
-		return copy ? this[listenersKey].concat() : this[listenersKey]
+		return getAllListeners(this, createMode)
 
 	},
 
-	getListenerIndexFor(priority, before) {
+	clearEventListener() {
 
-		let listeners = Prototype.getEventListeners.call(this)
+		return clearEventListener(this)
 
-		for (let listener, i = 0; listener = listeners[i]; i++) 
-			if ((before && priority >= listener.priority) ||
-				(!before && priority > listener.priority))
-				return i
+	},
+	
+	addEventListener(type, callback, options = undefined) { 
 
-		return listeners.length
+		return addEventListener(this, type, callback, options) 
 
 	},
 
-	dispatchEvent(eventOrType, eventParams = null, options = null) {
+	on(type, callback, options = undefined) { 
 
-		if (this === null)
-			throw 'EventDispatcher.dispatchEvent(): cannot dispatch event from null'
-
-		// skip if listeners have never been associated AND event will not propagate
-		if (!this[listenersKey] && (!options || !options.propagateTo) && (!eventOrType.options || !eventOrType.options.propagateTo))
-			return this
-
-		if (typeof eventOrType === 'string') {
-
-			let events = eventOrType.split(/(?:\s+)|(?:,\s*)/)
-
-			if (events.length > 1) {
-
-				for (let event of events)
-					Prototype.dispatchEvent.call(this, event, eventParams, options)
-
-				return this
-
-			}
-
-		}
-
-		let event = typeof eventOrType === 'string' ? new Event(eventOrType, options).initTarget(this) : eventOrType
-
-		for (let k in eventParams) {
-
-			if (k === 'target' || 
-				k === 'currentTarget' ||
-				k === 'type' ||
-				k === 'options')
-				continue
-
-			event[k] = eventParams[k]
-
-		}
-
-		for (let listener of Prototype.getEventListeners.call(this, { copy: true, createIfNull: false })) {
-
-			if (listener.test(event.type))
-				listener.call(event)
-
-			if (event.canceled)
-				break
-
-		}
-
-		for (let listener, listeners = Prototype.getEventListeners.call(this, { createIfNull: false }), i = 0; listener = listeners[i]; i++)
-			if (listener.isKilled())
-				listeners.splice(i--, 1)
-
-		if (!event.canceled && event.options && event.options.propagateTo) {
-
-			let targets = event.options.propagateTo(event.currentTarget) || []
-
-			if (!isIterable(targets)) {
-
-				// if there's only one target (targets is not iterable)
-				// the same event is recycled
-				event.currentTarget = targets
-				Prototype.dispatchEvent.call(targets, event)
-
-			} else {
-
-				// else there are multiple targets (targets is an Array, NodeList wathever...)
-				// the orginal event is clone to be dispatched to each target
-				for (let target of targets) {
-
-					let event2 = event.clone().initTarget(event.target, target)
-
-					Prototype.dispatchEvent.call(target, event2, eventParams)
-
-				}
-
-			}
-
-		}
-
-		return this
+		return addEventListener(this, type, callback, options) 
 
 	},
 
-	addEventListener(type, callback, { priority = 0, insertBefore = false, thisArg = null, max = Infinity } = {}) {
+	once(type, callback, options = { }) { 
 
-		if (typeof type === 'string') {
-
-			let types = type.split(/(?:\s+)|(?:,\s*)/)
-
-			if (types.length > 1) {
-
-				for(let v of types)
-					Prototype.addEventListener.call(this, v, callback, { priority, insertBefore, thisArg, max })
-
-				return this
-
-			}
-
-		}
-
-		let listeners = Prototype.getEventListeners.call(this, { createIfNull: true })
-
-		let index = Prototype.getListenerIndexFor.call(this, priority, insertBefore)
-
-		listeners.splice(index, 0, new EventListener(this, type, callback, priority, max, thisArg))
-
-		return this
+		return once(this, type, callback, options) 
 
 	},
 
-	clearEventListeners() {
+	removeEventListener(type, callback = undefined, options = undefined) { 
 
-		let listeners = Prototype.getEventListeners.call(this)
-
-		while(listeners.length)
-			listeners.pop().kill()
-
-		delete this[listenersKey]
-
-		return this
+		return removeEventListener(this, type, callback, options) 
 
 	},
 
-	removeEventListener(type, callback = null) {
+	off(type, callback = undefined, options = undefined) { 
 
-		let listeners = Prototype.getEventListeners.call(this)
+		return removeEventListener(this, type, callback, options) 
 
-		for (let listener, i = 0; listener = listeners[i]; i++) {
+	},
 
-			if (String(listener.type) === String(type) && (!callback || callback === listener.callback)) {
+	dispatchEvent(event, eventOptions = null) { 
 
-				listeners.splice(i--, 1)
-				listener.kill()
-
-			}
-
-		}
-
-		return this
+		return dispatchEvent(this, event, eventOptions) 
 
 	},
 
 }
 
-const Shorthands = {
 
-	on: Prototype.addEventListener,
 
-	once(type, callback, options = {}) {
 
-		Prototype.addEventListener.call(this, type, callback, Object.assign(options, { max: 1 }))
 
-		return this
 
-	},
-
-	off: Prototype.removeEventListener,
-
-}
-
-export function implementEventDispatcher(target, { applyShortands = true, remap = null } = {}) {
-
-	const remapK = typeof remap === 'function' ? remap : (k => remap ? (remap[k] || k) : k)
-
-	for (let k in Prototype)
-		Object.defineProperty(target, remapK(k), { value: Prototype[k] })
-
-	if (applyShortands)
-		for (let k in Shorthands)
-			Object.defineProperty(target, remapK(k), { value: Shorthands[k] })
-
-	return target
-
-}
 
 export class EventDispatcher { }
 
-implementEventDispatcher(EventDispatcher.prototype)
+Object.assign(EventDispatcher.prototype, EventDispatcherPrototype)
 
 
 
 
 
 
-export function on(target, type, callback, options) {
 
-	iterate(target, object => Shorthands.on.call(object, type, callback, options))
 
-	return target
+export function implementEventDispatcher(target, { remap = null } = {}) {
 
-}
+	for (let key in EventDispatcherPrototype) {
 
-export function once(target, type, callback, options) {
+		let remapKey = remap ? (typeof remap === 'object' ? (remap[key] || key) : remap(key)) : key
 
-	iterate(target, object => Shorthands.once.call(object, type, callback, options))
+		if (remapKey)
+			Object.defineProperty(target, remapKey, { value: EventDispatcherPrototype[key] })
 
-	return target
-
-}
-
-export function off(target, type, callback, options) {
-
-	iterate(target, object => Shorthands.off.call(object, type, callback, options))
+	}
 
 	return target
 
 }
 
-export function dispatchEvent(target, type, eventParams, options) {
-
-	iterate(target, object => Prototype.dispatchEvent.call(object, type, eventParams, options))
-
-	return target
-
-}
-
-export function getEventListeners(target, options) {
-
-	return Prototype.getEventListeners.call(target, options)
-
-}
-
-export function clearEventListeners(target) {
-
-	iterate(target, object => Prototype.clearEventListeners.call(object))
-
-	return target
-
-}
 
 
 
