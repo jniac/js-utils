@@ -58,6 +58,12 @@ export function getListenersMatching(target, type, callback = null, options = nu
 
 export function addEventListener(target, type, callback, options = undefined) {
 
+	if (!callback) {
+
+		throw 'event.js: addEventListener callback is null!'
+
+	}
+
 	if (isIterable(target)) {
 
 		for (let element of target)

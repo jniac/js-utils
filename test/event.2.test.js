@@ -1,4 +1,4 @@
-import * as eventjs from '../src/event.2.js'
+import * as eventjs from '../src/event.js'
 export { eventjs }
 
 
