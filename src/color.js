@@ -163,6 +163,12 @@ let re = {
 
 }
 
+function toFF(x) {
+
+	return Math.round(clamp(x) * 0xff).toString(16).padStart(2, '0')
+
+}
+
 function clamp(x, min = 0, max = 1) {
 
 	return x < min ? min : x > max ? max : x
@@ -419,13 +425,19 @@ export class Color {
 
 	get rgbaString() { return this.getRGBAString() }
 
+	/**
+	 * @param alpha 
+	 *     if alpha === false will return #RRGGBB
+	 *     if alpha === true will return #RRGGBBAA where AA is computed from this.a
+	 *     else will return #RRGGBBAA where AA is computed from the param "alpha" (intended as overriding the local alpha value)
+	 */
 	getHexString({ prefix = '#', alpha = false } = {}) {
 
 		return prefix 
-			+ this.r255.toString(16).padStart(2, '0')
-			+ this.g255.toString(16).padStart(2, '0')
-			+ this.b255.toString(16).padStart(2, '0')
-			+ (alpha ? this.a255.toString(16).padStart(2, '0') : '')
+			+ toFF(this.r)
+			+ toFF(this.g)
+			+ toFF(this.b)
+			+ (alpha !== false ? toFF(alpha === true ? this.a : alpha) : '')
 
 	}
 
