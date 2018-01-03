@@ -181,7 +181,8 @@ export function dispatchEvent(target, event, eventOptions = null) {
 
 	event.currentTarget = target
 
-	let listeners = getListenersMatching(target, event.type).sort((A, B) => B.priority - A.priority)
+	// let listeners = getListenersMatching(target, event.type).sort((A, B) => B.priority - A.priority)
+	let listeners = getListenersMatching(target, event.type)
 
 	for (let listener of listeners) {
 
@@ -267,24 +268,38 @@ class Event {
 
 
 
+let ListenerDefaultOptions = {
 
+	priority: 0,
+	insertFirst: false,
+
+}
 
 class Listener {
 
-	constructor(array, type, callback, options = undefined) {
+	constructor(array, type, callback, options = {}) {
 
 		this.count = 0
 
 		this.array = array
-		this.array.push(this)
-
-		this.enabled = true
-		this.priority = 0
-
-		Object.assign(this, options)
+		// this.array.push(this)
 
 		this.type = type
 		this.callback = callback
+
+		this.enabled = true
+
+		// options
+		Object.assign(this, ListenerDefaultOptions, options)
+
+		let index = this.array.findIndex(listener => this.insertFirst ? 
+			listener.priority <= this.priority : 
+			listener.priority < this.priority)
+
+		if (index === -1)
+			this.array.push(this)
+		else
+			this.array.splice(index, 0, this)
 
 	}
 
@@ -329,6 +344,9 @@ class Listener {
 
 	kill() {
 
+		if (this.killed)
+			return
+
 		let index = this.array.indexOf(this)
 
 		this.array.splice(index, 1)
@@ -337,6 +355,8 @@ class Listener {
 		delete this.type
 		delete this.callback
 		delete this.options
+
+		this.killed = true
 
 	}
 

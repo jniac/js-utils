@@ -12,6 +12,28 @@ html
 					padding: 30px
 					font-family: monospace
 
+		block style
+
+		script.
+
+			function load(url) {
+
+				return new Promise(resolve => {
+
+					let xhr = new XMLHttpRequest()
+
+					xhr.open('GET', url)
+
+					xhr.addEventListener('load', event => resolve(xhr.responseText))
+
+					xhr.addEventListener('error', event => resolve('nothing!'))
+
+					xhr.send()			
+
+				})
+
+			}
+
 	body
 
 		block body

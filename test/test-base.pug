@@ -1,0 +1,131 @@
+extends base
+
+block style
+	link(rel='stylesheet', href='/fonts/iconmonstr/iconmonstr-iconic-font.css')
+	style
+		:sass
+			.console
+				font-family: monospace
+				line-height: 1.3em
+
+				div + div
+					--margin: 8px
+					margin-top: var(--margin)
+					padding-top: var(--margin)
+					border-top: 1px solid #eee
+
+				.comment
+					color: #999
+
+				.title
+					padding-bottom: 8px
+					font-size: 2.5em
+
+				div + div.title
+					margin-top: 64px
+					border-top: none
+
+				.log:before
+					content: '> '
+
+				.assert
+
+					&:before
+						position: relative
+						display: inline-block
+						font-family: 'iconmonstr-iconic-font'
+						font-size: .9em
+						padding-right: 8px
+						transform: translateY(.25em)
+					
+					&.success
+						color: #139A71
+						
+						&:before
+							content: '\e0f1'
+
+					&.fail
+						color: #E7100C
+
+						&:before
+							content: '\e0f5'
+
+block body
+
+	pre.console
+
+	script.
+
+		function log(...args) {
+
+			if (log.toConsole)
+				console.log.apply(console, args)
+
+			let div = document.createElement('div')
+			div.classList.add('log')
+
+			log.last = 
+			div.innerHTML = args.join(' ')
+
+			document.querySelector('.console').appendChild(div)
+
+		}
+
+		log.toConsole = true
+
+
+
+		log.getLog = function(index) {
+
+			let children = document.querySelector('.console').querySelectorAll('.log')
+
+			if (index < 0)
+				index += children.length
+
+			return children[index].innerHTML
+
+		}
+
+		log.getLogs = function(fromIndex, toIndex) {
+
+			let children = [...document.querySelector('.console').querySelectorAll('.log')]
+
+			return children.slice(fromIndex, toIndex).map(div => div.innerHTML)
+
+		}
+
+
+
+		log.comment = function comment(msg) {
+
+			let div = document.createElement('div')
+			div.classList.add('comment')
+			div.innerHTML = msg
+
+			document.querySelector('.console').appendChild(div)
+
+		}
+
+		log.title = function title(msg) {
+
+			let div = document.createElement('div')
+			div.classList.add('title')
+			div.innerHTML = msg
+
+			document.querySelector('.console').appendChild(div)
+
+		}
+
+		log.assert = function assert(msg, test) {
+
+			let div = document.createElement('div')
+			div.classList.add('assert')
+
+			let success = test()
+
+			div.classList.add(success ? 'success' : 'fail')
+			div.innerHTML = (success ? '' : 'fail: ') + msg
+
+			document.querySelector('.console').appendChild(div)
+
+		}

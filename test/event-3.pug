@@ -1,0 +1,64 @@
+extends test-base
+
+block append style
+	style
+		:sass
+
+			body
+				padding: 30px
+				font-family: monospace
+
+			.dom
+
+				--margin: 20px
+
+				position: absolute
+				right: var(--margin)
+				top: var(--margin)
+
+				width: 400px
+				background-color: #eee
+				line-height: var(--margin)
+
+				& div
+					margin: calc(var(--margin) / 2)
+				&, & div
+					padding: calc(var(--margin) / 2)
+
+				div + div
+					margin-top: var(--margin)
+
+				.blue
+					background-color: #6CBCFF
+
+				.orange
+					background-color: #FD725E
+
+				.yellow
+					background-color: #FFE64A
+
+				.purple
+					background-color: #974CB8
+					color: white
+
+block append body
+	.dom
+		.blue
+			.orange
+				.yellow
+				.yellow
+					.purple.letter.A A
+		.blue
+			.orange
+				.yellow
+					.purple.letter.B B
+					.purple
+			.orange
+			.orange
+				.yellow
+				.yellow.letter.C C
+
+	script(type='module').
+		import * as main from './event-3.js'
+		Object.assign(window, main)
+
