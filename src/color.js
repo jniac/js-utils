@@ -244,7 +244,7 @@ export class Color {
 		this.b = this.b * q2 + other.b * q
 		this.a = this.a * q2 + other.a * q
 
-		return thiss
+		return this
 
 	}
 
