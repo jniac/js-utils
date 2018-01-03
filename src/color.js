@@ -214,8 +214,13 @@ export class Color {
 	
 	constructor() {
 
-		this.setRGBA(1, 1, 1, 1)
-		this.set(...arguments)
+		this.r = 1
+		this.g = 1
+		this.b = 1
+		this.a = 1
+
+		if (arguments.length)
+			this.set(...arguments)
 
 	}
 
@@ -227,6 +232,19 @@ export class Color {
 		this.a = other.a
 
 		return this
+
+	}
+
+	mix(other, q) {
+
+		let q2 = 1 - q
+
+		this.r = this.r * q2 + other.r * q
+		this.g = this.g * q2 + other.g * q
+		this.b = this.b * q2 + other.b * q
+		this.a = this.a * q2 + other.a * q
+
+		return thiss
 
 	}
 
