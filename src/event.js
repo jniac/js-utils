@@ -3,6 +3,22 @@
  * a very permissive event module, with great options
  * second version built on WeakMap
  * inspired by jQuery (chaining, iterations), express (flexibility) etc.
+ *
+ *
+ *
+ * WARNINGS & VULNERABILITIES:
+ *
+ * • For some unknow reasons a killed Listener is sometimes called or killed (a second time!)
+ *       " if (this.killed)
+ *            return "
+ *       is a good patch, but the bug is not fixed
+ *
+ * • When removing a listener, if the listener has been added with a "thisArg" 
+ *       it could currently be removed without specifying a value for "thisArg" (since off/removeEventListener() could be used with nothing more than a type parameters)
+ *       this is dangerous since differents listeners could match the same criteria (two instance of a same class / prototype have striclty equal members 
+ *       (because actually belonging to that class / prototype)).
+ *       When specifying a callback to removeEventListener AND NOT a thisArg, should be considered as not matching listeners that HAVE a thisArg ?
+ * 
  */
 
 const isIterable = obj => obj ? (typeof obj[Symbol.iterator] === 'function') : false
@@ -332,6 +348,9 @@ class Listener {
 	}
 
 	call(event) {
+
+		if (this.killed)
+			return
 
 		this.callback.call(this.thisArg || event.currentTarget, event, ...(this.args || []))
 
