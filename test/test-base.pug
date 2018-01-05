@@ -4,9 +4,10 @@ block style
 	link(rel='stylesheet', href='/fonts/iconmonstr/iconmonstr-iconic-font.css')
 	style
 		:sass
-			.console
+			pre.console
 				font-family: monospace
 				line-height: 1.3em
+				tab-size: 4
 
 				div + div
 					--margin: 8px
@@ -21,8 +22,14 @@ block style
 					padding-bottom: 8px
 					font-size: 2.5em
 
+				.info span
+					display: inline-block
+					padding: 1px 2px 3px 2px
+					background-color: #eee
+					color: #139A71
+
 				div + div.title
-					margin-top: 64px
+					margin-top: 128px
 					border-top: none
 
 				.log:before
@@ -96,35 +103,33 @@ block body
 
 
 
-		log.comment = function comment(msg) {
+
+
+		function getLogDiv(type, msg) {
 
 			let div = document.createElement('div')
-			div.classList.add('comment')
-			div.innerHTML = msg
+			div.classList.add(type)
+			div.innerHTML = `<span>${msg}</span>`
 
 			document.querySelector('.console').appendChild(div)
 
 		}
 
-		log.title = function title(msg) {
+		log.comment = msg => getLogDiv('comment', msg)
+		log.info = msg => getLogDiv('info', msg)
+		log.title = msg => getLogDiv('title', msg)
 
-			let div = document.createElement('div')
-			div.classList.add('title')
-			div.innerHTML = msg
 
-			document.querySelector('.console').appendChild(div)
 
-		}
+
 
 		log.assert = function assert(msg, test) {
 
 			let div = document.createElement('div')
 			div.classList.add('assert')
 
-			let success = test()
-
-			div.classList.add(success ? 'success' : 'fail')
-			div.innerHTML = (success ? '' : 'fail: ') + msg
+			div.classList.add(test ? 'success' : 'fail')
+			div.innerHTML = (test ? '' : 'fail: ') + msg
 
 			document.querySelector('.console').appendChild(div)
 
