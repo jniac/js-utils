@@ -1,13 +1,31 @@
 
-export function between(min, max) {
+function identity(x) {
 
-	return min + (max - min) * Math.random()
+	return x
 
 }
 
-export function around(x, delta) {
+export function between(min, max, f = identity) {
 
-	return x + (Math.random() > .5 ? -1 : 1) * delta * Math.random() 
+	return min + (max - min) * f(Math.random())
+
+}
+
+export function sign(p = .5) {
+
+	return Math.random() < p ? 1 : -1
+
+}
+
+export function chance(p = .5) {
+
+	return Math.random() < p
+
+}
+
+export function around(x, delta, f = identity) {
+
+	return x + sign() * delta * f(Math.random()) 
 
 }
 
