@@ -251,7 +251,12 @@ class Event {
 
 		})
 
-		Object.defineProperty(this, 'type', { value: type })
+		Object.defineProperty(this, 'type', {
+
+			enumerable: true,
+			value: type,
+
+		})
 
 		for (let k in options) {
 
