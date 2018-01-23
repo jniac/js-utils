@@ -237,6 +237,9 @@ export class Color {
 
 	mix(other, q) {
 
+		if (!(other instanceof Color))
+			other = new Color(other)
+
 		let q2 = 1 - q
 
 		this.r = this.r * q2 + other.r * q
@@ -502,10 +505,10 @@ export function mix(color1, color2, ratio) {
 
 }
 
-export function randomColor(color1, color2) {
+export function random(color1, color2) {
 
 	if (color1 && color2)
-		mix(color1, color2, Math.random())
+		return mix(color1, color2, Math.random())
 
 	return new Color(Math.random(), Math.random(), Math.random())
 
