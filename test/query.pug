@@ -1,0 +1,13 @@
+extends test-base
+
+block title
+	title event.js test
+
+block append style
+	style
+		include:sass query.sass
+
+block append body
+	script(type='module').
+		import * as main from './query.js'
+		Object.assign(window, main)
