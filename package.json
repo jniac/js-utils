@@ -4,7 +4,7 @@
   "description": "online svg editor: http://editor.method.ac/",
   "main": "index.js",
   "scripts": {
-    "ssh-add": "ssh-add ~/.ssh/id_rsa",
+    "ssh-add": "ssh-add -K ~/.ssh/id_rsa",
     "test": "super-quick-static auto",
     "build": "rollup src/event.js --format iife --name 'eventjs' | babel --es2015 -o test/js/event.js",
     "rollup-chain": "rollup src/tools.js -f es -o build/modules/tools.js",
