@@ -1,0 +1,20 @@
+extends test-base
+
+block title
+	title event.js test
+
+block append style
+	style
+		:sass
+
+			body
+				padding: 30px
+				font-family: monospace
+
+block append body
+
+	script(type='module').
+		import * as objectjs from '../src/object.js'
+		
+		testlineLoad('./object-testline.js')
+

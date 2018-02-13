@@ -68,11 +68,12 @@ block body
 			if (log.toConsole)
 				console.log.apply(console, args)
 
+
 			let div = document.createElement('div')
 			div.classList.add('log')
 
 			log.last = 
-			div.innerHTML = args.join(' ')
+			div.innerHTML = args.map(v => String(v)).join(' ')
 
 			document.querySelector('.console').appendChild(div)
 
@@ -134,3 +135,77 @@ block body
 			document.querySelector('.console').appendChild(div)
 
 		}
+
+
+
+
+
+
+		async function testlineLoad(testlineURL) {
+
+			let code = await load(testlineURL)
+
+			let waitForImport = async () => {}
+
+			code = code.replace(/\/\/ IMPORT([\s\S]*?)\/\//, (m, m1) => {
+
+				let importCode = m1.trim()
+
+				let script = document.createElement('script')
+				script.setAttribute('type', 'module')
+				script.innerHTML = importCode + `\n\nwindow.importDone = true`
+				document.head.appendChild(script)
+
+				waitForImport = async () => new Promise(resolve => {
+
+					let id = setInterval(() => {
+
+						if (!window.importDone)
+							return
+
+						clearInterval(id)
+						resolve(true)
+
+					}, 200)
+
+				})
+
+				return '//'
+
+			})
+
+			console.log(code)
+			console.log(await waitForImport())
+
+			let steps = code.split(/\/\/ TEST.*\n/).filter(v => /\S/.test(v))
+			let titles = code.match(/\/\/ TEST.*\n/g).map(v => v.slice('// TEST - '.length))
+
+			window.extract = []
+
+			for (let [index, step] of steps.entries()) {
+
+				log.title(titles[index])
+
+				let a = step.split(/\/\/\slog.break\n/g)
+
+				let b = []
+
+				for (let v of a) {
+
+					let index = window.extract.length
+					window.extract.push(v.trim())
+					let comment = `log.comment(window.extract[${index}])`
+					b.push(comment)
+					b.push(v)
+
+				}
+
+				eval(b.join('\n'))
+
+			}
+
+		}
+
+
+
+

@@ -12,24 +12,6 @@ log.toConsole = false
 
 	for (let [index, step] of steps.entries()) {
 
-		// let a = step.match(/[\s\S]*?log\.assert[\s\S]*?\n\n/gm).map(v => v.trim())
-
-		// let b = []
-
-		// for (let [i, v] of a.entries()) {
-
-		// 	let comment = `log.comment(\`${v.replace(/`/g, '\\`')}\`)`
-		// 	b.push(comment)
-
-		// 	b.push(v)
-
-		// }
-
-		// eval(b.join('\n'))
-
-
-
-
 		log.title(titles[index])
 
 		let a = step.split(/\/\/\slog.break\n/g)
