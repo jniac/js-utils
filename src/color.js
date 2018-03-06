@@ -163,6 +163,12 @@ let re = {
 
 }
 
+function toF(x) {
+
+	return Math.round(clamp(x) * 0xf).toString(16)
+
+}
+
 function toFF(x) {
 
 	return Math.round(clamp(x) * 0xff).toString(16).padStart(2, '0')
@@ -177,11 +183,10 @@ function clamp(x, min = 0, max = 1) {
 
 function hue2rgb(p, q, t){
 
+	t %= 1
+
 	if (t < 0) 
 		t += 1
-	
-	if (t > 1) 
-		t -= 1
 	
 	if (t < 1 / 6) 
 		return p + (q - p) * 6 * t
@@ -198,7 +203,19 @@ function hue2rgb(p, q, t){
 
 export class Color {
 
+	static ensure(value) {
+
+		if (value instanceof Color)
+			return value
+
+		return new Color().set(value)
+
+	}
+
 	static mix(color1, color2, q) {
+
+		color1 = Color.ensure(color1)
+		color2 = Color.ensure(color2)
 
 		let q2 = 1 - q
 		let c = new Color()
@@ -452,7 +469,14 @@ export class Color {
 	 *     if alpha === true will return #RRGGBBAA where AA is computed from this.a
 	 *     else will return #RRGGBBAA where AA is computed from the param "alpha" (intended as overriding the local alpha value)
 	 */
-	getHexString({ prefix = '#', alpha = false } = {}) {
+	getHexString({ prefix = '#', alpha = false, short = false } = {}) {
+
+		if (short)
+			return prefix 
+				+ toF(this.r)
+				+ toF(this.g)
+				+ toF(this.b)
+				+ (alpha !== false ? toF(alpha === true ? this.a : alpha) : '')
 
 		return prefix 
 			+ toFF(this.r)
@@ -464,6 +488,11 @@ export class Color {
 
 	get hexString() { return this.getHexString() }
 
+	get RRGGBB() { return this.getHexString({ alpha: false }) }
+	get RRGGBBAA() { return this.getHexString({ alpha: true }) }
+	get RGB() { return this.getHexString({ alpha: false, short: true }) }
+	get RGBA() { return this.getHexString({ alpha: true, short: true }) }
+
 	getHSLString() {
 
 		let [h, s, l] = this.getHSL()
@@ -473,6 +502,42 @@ export class Color {
 	}
 
 	get hslString() { return this.getHSLString() }
+
+	setHue(value) {
+
+		let [, s, l] = this.getHSL()
+		this.setHSL(value, s, l)
+
+		return this
+
+	}
+
+	setSaturation(value) {
+
+		let [h,, l] = this.getHSL()
+		this.setHSL(h, value, l)
+
+		return this
+
+	}
+
+	setLuminosity(value) {
+
+		let [h, s] = this.getHSL()
+		this.setHSL(h, s, value)
+
+		return this
+
+	}
+
+	get hue() { return this.getHSL()[0] }
+	set hue(value) { this.setHue(value) }
+
+	get saturation() { return this.getHSL()[1] }
+	set saturation(value) { this.setSaturation(value) }
+
+	get luminosity() { return this.getHSL()[2] }
+	set luminosity(value) { this.setLuminosity(value) }
 
 }
 

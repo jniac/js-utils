@@ -75,6 +75,7 @@ function test(queryString) {
 
 window.bob = bob
 test('*')
+test('> *')
 test('type')
 test('type=human')
 test('type=human age>20')

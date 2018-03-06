@@ -1,4 +1,56 @@
 import * as colorjs from '../src/color.js'
+import { Color } from '../src/color.js'
 export { colorjs }
 
+function* step(start, end, { step = 1, count } = {}) {
+
+	let d = end - start
+
+	if (count === undefined)
+		count = Math.ceil(d / step)
+
+	for (let i = 0; i <= count; i++)
+		yield start + d * i / count
+
+}
+
 export let c1 = new colorjs.Color('goldenrod')
+
+export function makeDiv(color) {
+
+	color = Color.ensure(color)
+
+	let div = document.createElement('div')
+
+	Object.assign(div.style, {
+
+		width: '200px',
+		height: '20px',
+		'background-color': color.RRGGBBAA,
+
+	})
+
+	document.body.append(div)
+
+}
+
+let color
+
+color = Color.ensure('gold')
+makeDiv(color)
+
+color.luminosity *= .8
+makeDiv(color)
+
+color.luminosity *= .8
+makeDiv(color)
+
+color = Color.ensure('gold')
+
+for (let x of step(0, 2, { count: 20 })) {
+
+	makeDiv(color)
+	color.hue = x
+
+}
+

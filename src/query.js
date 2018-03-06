@@ -62,13 +62,22 @@ export default function query(object, selector, { tagsDelegate = 'tags', childre
 
 	}
 
+	let includeSelf = true
+
+	if (/^\s*>\s+/.test(selector)) {
+
+		selector = selector.replace(/^\s*>\s+/, '')
+		includeSelf = false
+
+	}
+
 	let stages = selector
 		.split(/\s+>\s+/)
 		.map(str => str
 			.split(/\s+/)
 			.map(str => makeTest(str)))
 
-	let array, candidates = getChildren(object, childrenDelegate, true)
+	let array, candidates = getChildren(object, childrenDelegate, includeSelf)
 
 	for (let [index, stage] of stages.entries()) {
 
