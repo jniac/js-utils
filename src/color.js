@@ -1,3 +1,9 @@
+/**
+ * Tue Mar 06 2018
+ * Color plus:
+ *     added hue/saturation/luminosity modifier (get/set)
+ */
+
 export let CSS = {
 
 	aliceblue: '#f0f8ff',
