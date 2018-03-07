@@ -262,7 +262,8 @@ class Event {
 
 			Object.defineProperty(this, k, { 
 				
-				enumerable: k in EventOptions,
+				// enumerable: k in EventOptions,
+				enumerable: true,
 				value: options[k],
 
 			})
