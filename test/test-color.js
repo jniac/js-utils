@@ -1,6 +1,6 @@
 import * as colorjs from '../src/color.js'
 import { Color } from '../src/color.js'
-export { colorjs }
+export { Color, colorjs }
 
 function* step(start, end, { step = 1, count } = {}) {
 
@@ -35,6 +35,12 @@ export function makeDiv(color) {
 }
 
 let color
+
+color = Color.ensure()
+
+color.luminosity *= .65
+color.saturation *= .65
+
 
 color = Color.ensure('gold')
 makeDiv(color)

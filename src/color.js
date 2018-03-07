@@ -343,7 +343,7 @@ export class Color {
 			if (color.slice(0, 3) === 'hsl') {
 
 				let [, h, s, l] = color.match(re.hsl) || [, 0, 100, 50]
-				return this.setHSL(h / 360, s / 100, l / 100)
+				return this.setHsl(h / 360, s / 100, l / 100)
 
 			}
 
@@ -388,7 +388,7 @@ export class Color {
 
 	}
 
-	setHSL(h, s, l) {
+	setHsl(h, s, l) {
 
 		if (s === 0) {
 
@@ -411,7 +411,7 @@ export class Color {
 
 	}
 
-	getHSL() {
+	getHsl() {
 
 		let h, s, l
 		let r = this.r, g = this.g, b = this.b
@@ -499,20 +499,28 @@ export class Color {
 	get RGB() { return this.getHexString({ alpha: false, short: true }) }
 	get RGBA() { return this.getHexString({ alpha: true, short: true }) }
 
-	getHSLString() {
+	getHslString() {
 
-		let [h, s, l] = this.getHSL()
+		let [h, s, l] = this.getHsl()
 
 		return `hsl(${Math.round(360 * h)}, ${Math.round(100 * s)}%, ${Math.round(100 * l)}%)`
 
 	}
 
-	get hslString() { return this.getHSLString() }
+	get hslString() { return this.getHslString() }
+	
+	get hsl() {
+
+		let [h, s, l] = this.getHsl()
+
+		return [h * 360, s * 100, l * 100]
+
+	}
 
 	setHue(value) {
 
-		let [, s, l] = this.getHSL()
-		this.setHSL(value, s, l)
+		let [, s, l] = this.getHsl()
+		this.setHsl(value, s, l)
 
 		return this
 
@@ -520,8 +528,8 @@ export class Color {
 
 	setSaturation(value) {
 
-		let [h,, l] = this.getHSL()
-		this.setHSL(h, value, l)
+		let [h,, l] = this.getHsl()
+		this.setHsl(h, value, l)
 
 		return this
 
@@ -529,20 +537,20 @@ export class Color {
 
 	setLuminosity(value) {
 
-		let [h, s] = this.getHSL()
-		this.setHSL(h, s, value)
+		let [h, s] = this.getHsl()
+		this.setHsl(h, s, value)
 
 		return this
 
 	}
 
-	get hue() { return this.getHSL()[0] }
+	get hue() { return this.getHsl()[0] }
 	set hue(value) { this.setHue(value) }
 
-	get saturation() { return this.getHSL()[1] }
+	get saturation() { return this.getHsl()[1] }
 	set saturation(value) { this.setSaturation(value) }
 
-	get luminosity() { return this.getHSL()[2] }
+	get luminosity() { return this.getHsl()[2] }
 	set luminosity(value) { this.setLuminosity(value) }
 
 }
