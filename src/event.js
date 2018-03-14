@@ -160,6 +160,8 @@ export function clearEventListener(target) {
 
 }
 
+// OPTIMIZE: dispatchEvent is recursively invoked, all the first precautions could be repeated two, three and even more times.
+// if dispatchEvent should remain convenient, dispatchEvent may call an inner sub-optimized-methods
 export function dispatchEvent(target, event, eventOptions = null) {
 
 	if (!target || !event)
