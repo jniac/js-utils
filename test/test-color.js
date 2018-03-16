@@ -14,6 +14,15 @@ function* step(start, end, { step = 1, count } = {}) {
 
 }
 
+function* range(n) {
+
+	let i = 0
+
+	while (i < n)
+		yield i++
+
+}
+
 export let c1 = new colorjs.Color('goldenrod')
 
 export function makeDiv(color) {
@@ -53,10 +62,9 @@ makeDiv(color)
 
 color = Color.ensure('gold')
 
-for (let x of step(0, 2, { count: 20 })) {
+for (let x of range(20))
+	makeDiv(color.shiftHsl({ saturationGain: 1/4 }))
 
-	makeDiv(color)
-	color.hue = x
-
-}
+for (let x of range(20))
+	makeDiv(color.shiftHsl({ saturationGain: 2 }))
 

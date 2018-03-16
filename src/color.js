@@ -191,18 +191,18 @@ function hue2rgb(p, q, t){
 
 	t %= 1
 
-	if (t < 0) 
+	if (t < 0)
 		t += 1
-	
-	if (t < 1 / 6) 
+
+	if (t < 1 / 6)
 		return p + (q - p) * 6 * t
-	
-	if (t < 1 / 2) 
+
+	if (t < 1 / 2)
 		return q
-	
-	if (t < 2 / 3) 
+
+	if (t < 2 / 3)
 		return p + (q - p) * (2 / 3 - t) * 6
-	
+
 	return p
 
 }
@@ -234,7 +234,7 @@ export class Color {
 		return c
 
 	}
-	
+
 	constructor() {
 
 		this.r = 1
@@ -244,6 +244,12 @@ export class Color {
 
 		if (arguments.length)
 			this.set(...arguments)
+
+	}
+
+	getArray() {
+
+		return [this.r, this.g, this.b, this.a]
 
 	}
 
@@ -448,72 +454,38 @@ export class Color {
 
 	}
 
-	get r255() { return Math.round(clamp(this.r) * 0xff) }
-	get g255() { return Math.round(clamp(this.g) * 0xff) }
-	get b255() { return Math.round(clamp(this.b) * 0xff) }
-	get a255() { return Math.round(clamp(this.a) * 0xff) }
-
-	getRGBString() {
-
-		return `rgb(${this.r255}, ${this.g255}, ${this.b255})`
-
-	}
-
-	get rgbString() { return this.getRGBString() }
-
-	getRGBAString(alphaPrecision = 3) {
-
-		return `rgba(${this.r255}, ${this.g255}, ${this.b255}, ${this.a.toFixed(alphaPrecision)})`
-
-	}
-
-	get rgbaString() { return this.getRGBAString() }
-
 	/**
-	 * @param alpha 
-	 *     if alpha === false will return #RRGGBB
-	 *     if alpha === true will return #RRGGBBAA where AA is computed from this.a
-	 *     else will return #RRGGBBAA where AA is computed from the param "alpha" (intended as overriding the local alpha value)
+	 * TODO: FIX that shift, find an algo!!!
+	 *
+	 * shift the color from given modifiers:
+	 * be aware: use gain over direct shift modifiers for saturation and luminosity,
+	 * the gain computation will always keep hue information, even if the color looks completely grey, tiny difference between r, g & b floats will allow to restore the original hue
+	 * @param modifiers.hue hue shift, in degree, eg: +180 = the opposite color, (computation: color.hue += hue / 360)
+	 * @param modifiers.saturation saturation shift, in absolute value, eg: 1 = saturation >= 1, the color can't be more saturate (computation: color.saturation += saturation)
+	 * @param modifiers.saturationGain saturation gain, in absolute value, eg: 1 = saturation >= 1, the color can't be more saturate (computation: color.saturation += saturation)
 	 */
-	getHexString({ prefix = '#', alpha = false, short = false } = {}) {
-
-		if (short)
-			return prefix 
-				+ toF(this.r)
-				+ toF(this.g)
-				+ toF(this.b)
-				+ (alpha !== false ? toF(alpha === true ? this.a : alpha) : '')
-
-		return prefix 
-			+ toFF(this.r)
-			+ toFF(this.g)
-			+ toFF(this.b)
-			+ (alpha !== false ? toFF(alpha === true ? this.a : alpha) : '')
-
-	}
-
-	get hexString() { return this.getHexString() }
-
-	get RRGGBB() { return this.getHexString({ alpha: false }) }
-	get RRGGBBAA() { return this.getHexString({ alpha: true }) }
-	get RGB() { return this.getHexString({ alpha: false, short: true }) }
-	get RGBA() { return this.getHexString({ alpha: true, short: true }) }
-
-	getHslString() {
+	shiftHsl({ hue, saturation, saturationGain, luminosity, luminosityGain }) {
 
 		let [h, s, l] = this.getHsl()
 
-		return `hsl(${Math.round(360 * h)}, ${Math.round(100 * s)}%, ${Math.round(100 * l)}%)`
+		if (hue !== undefined)
+			h += hue / 360
 
-	}
+		if (saturation !== undefined)
+			s += saturation
 
-	get hslString() { return this.getHslString() }
-	
-	get hsl() {
+		if (saturationGain !== undefined)
+			s = 1 - (1 - s) / saturationGain
 
-		let [h, s, l] = this.getHsl()
+		if (luminosity !== undefined)
+			l += luminosity
 
-		return [h * 360, s * 100, l * 100]
+		if (luminosityGain !== undefined)
+			s = 1 - (1 - s) / saturationGain
+
+		this.setHsl(h, s, l)
+
+		return this
 
 	}
 
@@ -541,6 +513,79 @@ export class Color {
 		this.setHsl(h, s, value)
 
 		return this
+
+	}
+
+	get r255() { return Math.round(clamp(this.r) * 0xff) }
+	get g255() { return Math.round(clamp(this.g) * 0xff) }
+	get b255() { return Math.round(clamp(this.b) * 0xff) }
+	get a255() { return Math.round(clamp(this.a) * 0xff) }
+
+	getRGBString() {
+
+		return `rgb(${this.r255}, ${this.g255}, ${this.b255})`
+
+	}
+
+	get rgbString() { return this.getRGBString() }
+
+	getRGBAString(alphaPrecision = 3) {
+
+		return `rgba(${this.r255}, ${this.g255}, ${this.b255}, ${this.a.toFixed(alphaPrecision)})`
+
+	}
+
+	get rgbaString() { return this.getRGBAString() }
+
+	/**
+	 * @param alpha
+	 *     if alpha === false : return #RRGGBB
+	 *     if alpha === true : return #RRGGBBAA where AA is computed from this.a
+	 * 	   if typeof alpha === 'number' : return #RRGGBBAA where AA is computed from the given alpha
+	 *     if alpha === 'auto' : return #RRGGBBAA or #RRGGBB depending of the value this.a (this.a < 1)
+	 */
+	getHexString({ prefix = '#', alpha = 'auto', short = false } = {}) {
+
+		let alphaIsNumber = typeof alpha === 'number'
+		let a = alphaIsNumber ? alpha : this.a
+
+		if (short)
+			return prefix
+				+ toF(this.r)
+				+ toF(this.g)
+				+ toF(this.b)
+				+ (alphaIsNumber || alpha === true || (alpha === 'auto' && a < 1) ? toF(a) : '')
+
+		return prefix
+			+ toFF(this.r)
+			+ toFF(this.g)
+			+ toFF(this.b)
+			+ (alphaIsNumber || alpha === true || (alpha === 'auto' && a < 1) ? toFF(a) : '')
+
+	}
+
+	get hexString() { return this.getHexString() }
+
+	get RRGGBB() { return this.getHexString({ alpha: false }) }
+	get RRGGBBAA() { return this.getHexString({ alpha: true }) }
+	get RGB() { return this.getHexString({ alpha: false, short: true }) }
+	get RGBA() { return this.getHexString({ alpha: true, short: true }) }
+
+	getHslString() {
+
+		let [h, s, l] = this.getHsl()
+
+		return `hsl(${Math.round(360 * h)}, ${Math.round(100 * s)}%, ${Math.round(100 * l)}%)`
+
+	}
+
+	get hslString() { return this.getHslString() }
+
+	get hsl() {
+
+		let [h, s, l] = this.getHsl()
+
+		return [h * 360, s * 100, l * 100]
 
 	}
 
@@ -598,10 +643,3 @@ export function get() {
 	return new Color(...arguments)
 
 }
-
-
-
-
-
-
-
