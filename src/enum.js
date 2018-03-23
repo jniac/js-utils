@@ -1,12 +1,19 @@
 /**
- * key can be compared via 'is':
+ * EnumKey can be compared via 'is':
  *
  * let e = new Enum('FOO', 'BAR')
  * let key = e.FOO
  * key.is.FOO // true
  * key.is.BAR // false
  *
+ * EnumKey can be multiple:
+ * let e = new Enum('VERTICAL|V', 'HORIZONTAL|H')
+ * e.VERTICAL === e.V // true
+ * e.VERTICAL.is.V // true
+ *
  */
+
+let EnumKeyUID = 0
 class EnumKey {
 
 	constructor(enumInstance, names, index/*index, keys*/) {
@@ -17,6 +24,7 @@ class EnumKey {
 
 		Object.assign(this, {
 
+			uid: EnumKeyUID++,
 			name,
 			names,
 			altNames,
@@ -50,7 +58,9 @@ class EnumKey {
 
 	}
 
-	toString() { return this.name }
+	toString() { return `EnumKey(${this.names.join('|')})` }
+
+	valueOf() { return this.uid }
 
 }
 
@@ -112,6 +122,19 @@ export class Enum {
 	}
 
 	has(key) { return this[key] === key }
+
+	resolve(key, flags = '') {
+
+		if (key instanceof EnumKey)
+			return key
+
+		for (let enumKey of Object.values(this))
+			if (enumKey.test(key, flags))
+				return enumKey
+
+		return null
+
+	}
 
 	*[Symbol.iterator]() {
 

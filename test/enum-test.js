@@ -8,7 +8,7 @@ function test(str) {
 
 }
 
-let FooEnum = new Enum('FOO', 'BAR', 'baz')
+export let FooEnum = new Enum('FOO', 'BAR', 'baz')
 
 test(`FooEnum`)
 test(`FooEnum.FOO`)
@@ -23,7 +23,7 @@ test(`FooEnum.FOO.test(/fo/i)`)
 test(`[...FooEnum]`)
 test(`[...FooEnum.keys()]`)
 
-let Direction = new Enum('VERTICAL|VERT|V', 'HORIZONTAL|HORZ|H', 'BOTH FREE')
+export let Direction = new Enum('VERTICAL|VERT|V', 'HORIZONTAL|HORZ|H', 'BOTH FREE')
 
 console.log(Direction)
 test(`Direction.VERTICAL`)
@@ -36,3 +36,7 @@ test(`Direction.VERTICAL.is.VERT`)
 test(`Direction.VERTICAL.test('V')`)
 test(`Direction.VERTICAL.test('v')`)
 test(`Direction.VERTICAL.test('v', 'i')`)
+test(`String(Direction.resolve('V'))`)
+test(`String(Direction.resolve('v'))`)
+test(`String(Direction.resolve('v', 'i'))`)
+test(`Direction.resolve('v', 'i') + 0`)
