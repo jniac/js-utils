@@ -1,8 +1,6 @@
 
 import { Enum } from '../src/enum.js'
 
-let TestEnum = new Enum('FOO', 'BAR', 'baz')
-
 function test(str) {
 
     let result = eval(str)
@@ -10,15 +8,31 @@ function test(str) {
 
 }
 
-test(`TestEnum`)
-test(`TestEnum.FOO`)
-test(`TestEnum.FOO.is.FOO`)
-test(`TestEnum.FOO.is.BAR`)
-test(`TestEnum.FOO.test('FOO')`)
-test(`TestEnum.FOO.test(TestEnum.FOO)`)
-test(`TestEnum.FOO.test('foo')`)
-test(`TestEnum.FOO.test('foo', { ignoreCase: true })`)
-test(`TestEnum.FOO.test(/foo/i)`)
-test(`TestEnum.FOO.test(/fo/i)`)
-test(`[...TestEnum]`)
-test(`[...TestEnum.keys()]`)
+let FooEnum = new Enum('FOO', 'BAR', 'baz')
+
+test(`FooEnum`)
+test(`FooEnum.FOO`)
+test(`FooEnum.FOO.is.FOO`)
+test(`FooEnum.FOO.is.BAR`)
+test(`FooEnum.FOO.test('FOO')`)
+test(`FooEnum.FOO.test(FooEnum.FOO)`)
+test(`FooEnum.FOO.test('foo')`)
+test(`FooEnum.FOO.test('foo', 'i')`)
+test(`FooEnum.FOO.test(/foo/i)`)
+test(`FooEnum.FOO.test(/fo/i)`)
+test(`[...FooEnum]`)
+test(`[...FooEnum.keys()]`)
+
+let Direction = new Enum('VERTICAL|VERT|V', 'HORIZONTAL|HORZ|H', 'BOTH FREE')
+
+console.log(Direction)
+test(`Direction.VERTICAL`)
+test(`[...Direction]`)
+test(`[...Direction.VERTICAL.keys()].join(' ')`)
+test(`[...Direction.keys()].join(' ')`)
+test(`Direction.VERTICAL.is`)
+test(`Direction.VERTICAL.is.VERTICAL`)
+test(`Direction.VERTICAL.is.VERT`)
+test(`Direction.VERTICAL.test('V')`)
+test(`Direction.VERTICAL.test('v')`)
+test(`Direction.VERTICAL.test('v', 'i')`)
