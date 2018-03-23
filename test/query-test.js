@@ -1,8 +1,8 @@
-import query from '../../src/query.js'
+import query from '../src/query.js'
 
 let bob = {
 
-	tags: { 
+	tags: {
 		name: 'bob',
 		type: 'human',
 		age: 43,
@@ -63,7 +63,7 @@ const ots = object => `{ ${Object.keys(object).map(k => k + ':' + object[k]).joi
 
 function test(queryString) {
 
-	let r = query(bob, queryString).map(v => ots(v.tags)).join('\n')
+	let r = query(bob, queryString, { propsDelegate: 'tags' }).map(v => ots(v.tags)).join('\n')
 
 	let str = queryString + '\n' + r + '\n\n'
 

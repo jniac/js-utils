@@ -1,7 +1,7 @@
 extends test-base
 
 block title
-	title query.js test
+	title enum.js test
 
 block append style
 	style
@@ -9,5 +9,5 @@ block append style
 
 block append body
 	script(type='module').
-		import * as main from './query-test.js'
+		import * as main from './enum-test.js'
 		Object.assign(window, main)
