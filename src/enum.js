@@ -138,7 +138,7 @@ export class Enum {
 			if (enumKey.test(key, flags))
 				return enumKey
 
-		return null
+		return this.default
 
 	}
 
