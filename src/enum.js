@@ -1,4 +1,5 @@
 /**
+ *
  * EnumKey can be compared via 'is':
  *
  * let e = new Enum('FOO', 'BAR')
@@ -6,7 +7,10 @@
  * key.is.FOO // true
  * key.is.BAR // false
  *
+ *
+ *
  * EnumKey can be multiple:
+ *
  * let e = new Enum('VERTICAL|V', 'HORIZONTAL|H')
  * e.VERTICAL === e.V // true
  * e.VERTICAL.is.V // true
@@ -29,6 +33,7 @@ class EnumKey {
 			names,
 			altNames,
 			index,
+			isDefault: names.includes('default'),
             enum: enumInstance,
 
 		})
@@ -58,7 +63,7 @@ class EnumKey {
 
 	}
 
-	toString() { return `EnumKey(${this.names.join('|')})` }
+	toString() { return `EnumKey#${this.uid}(${this.names.join('|')})` }
 
 	valueOf() { return this.uid }
 
@@ -96,6 +101,7 @@ export class Enum {
 		}
 
 		Object.defineProperty(this, 'count', { value: count })
+		Object.defineProperty(this, 'default', { value: Object.values(this).find(enumKey => enumKey.isDefault) || null })
 
 		keys = [...this.keys()]
 

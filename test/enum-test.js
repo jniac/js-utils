@@ -23,7 +23,7 @@ test(`FooEnum.FOO.test(/fo/i)`)
 test(`[...FooEnum]`)
 test(`[...FooEnum.keys()]`)
 
-export let Direction = new Enum('VERTICAL|VERT|V', 'HORIZONTAL|HORZ|H', 'BOTH FREE')
+export let Direction = new Enum('VERTICAL|VERT|V', 'HORIZONTAL|HORZ|H', 'BOTH FREE default')
 
 console.log(Direction)
 test(`Direction.VERTICAL`)
