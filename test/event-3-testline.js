@@ -119,16 +119,16 @@ log.assert(`listener 3 should be first to log`, /listener 3/.test(log.getLog(-3)
 
 // log.break
 
-eventjs.on(object, 'foo', 
-	event => log('listener 4:', event.type, '{ priority: 100 }'), 
+eventjs.on(object, 'foo',
+	event => log('listener 4:', event.type, '{ priority: 100 }'),
 	{ priority: 100 })
 
-eventjs.on(object, 'foo', 
-	event => log('listener 5:', event.type, '{ priority: 10 }'), 
+eventjs.on(object, 'foo',
+	event => log('listener 5:', event.type, '{ priority: 10 }'),
 	{ priority: 10 })
 
-eventjs.on(object, 'foo', 
-	event => log('listener 6:', event.type, '{ priority: 10, insertFirst: true }'), 
+eventjs.on(object, 'foo',
+	event => log('listener 6:', event.type, '{ priority: 10, insertFirst: true }'),
 	{ priority: 10, insertFirst: true })
 
 eventjs.dispatchEvent(object, 'foo')
@@ -170,3 +170,96 @@ foo.dispatchEvent('BAR')
 log.assert('should be logged: "Show me the way to the next whisky BAR"', log.last === 'Show me the way to the next whisky BAR')
 
 
+
+
+
+
+// TEST - thisArg, off, 2nd way of adding listner
+
+;(() => {
+
+	let ed = new eventjs.EventDispatcher()
+
+	let uid = 0
+
+	class Foo {
+
+		constructor() {
+
+			this.uid = uid++
+
+			ed.on('foo', this.onFoo, { thisArg: this })
+
+		}
+
+		onFoo(event) {
+
+			log('Foo#' + this.uid, event.type)
+
+		}
+
+	}
+
+	let agent1 = new Foo()
+	let agent2 = new Foo()
+
+	ed.dispatchEvent('foo')
+
+	ed.off('foo', agent1.onFoo, { thisArg: agent1 })
+
+	ed.dispatchEvent('foo')
+
+	log.assert('only Foo#0 should be off', log.getLogs(-3).join(' ') === 'Foo#0 foo Foo#1 foo Foo#1 foo')
+
+})()
+
+
+
+
+
+
+// TEST - 2nd way of adding listener
+
+log(`myObject.on(event, myInstance.callback, { thisArg: myInstance }) is too long to write
+let's introduce: .on(event, object, key)!
+myObject.on(event, myInstance, 'callback') // shorter & easier
+`)
+
+// log.break
+
+;(() => {
+
+	let ed = new eventjs.EventDispatcher()
+
+	let uid = 0
+
+	class Bar {
+
+		constructor() {
+
+			this.uid = uid++
+
+			ed.on('bar', this, 'onBar')
+
+		}
+
+		onBar(event) {
+
+			log('Bar#' + this.uid, event.type)
+
+		}
+
+	}
+
+	let agent1 = new Bar()
+	let agent2 = new Bar()
+
+	ed.dispatchEvent('bar')
+
+	ed.off('bar', agent1, 'onBar')
+
+	ed.dispatchEvent('bar')
+
+	log.assert('Bar#0 should be off', log.getLogs(-3).join(' ') === 'Bar#0 bar Bar#1 bar Bar#1 bar')
+
+})()
