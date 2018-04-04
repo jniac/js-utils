@@ -41,27 +41,21 @@ function destroyObject(object) {
 
 }
 
-function add(stack, callback, thisArg = null, args = null) {
+function add(stack, callback, thisArg = null, args = null, condition = null) {
 
 	if (!callback)
 		return
 
 	if (stack.locked) {
 
-		stack.addArray.push({ callback, thisArg, args })
+		stack.addArray.push({ callback, thisArg, args, condition })
 
 	} else {
 
-		stack.array.push({ callback, thisArg, args })
+		stack.array.push({ callback, thisArg, args, condition })
 		stack.count++
 
 	}
-
-}
-
-function addAsObject(stack, object, key, ...args) {
-
-	add(stack, object[key], object, args)
 
 }
 
@@ -101,11 +95,7 @@ function remove(stack, callback, thisArg) {
 
 }
 
-function removeAsObject(stack, object, key) {
 
-	remove(stack, object[key], object)
-
-}
 
 export class Stack {
 
@@ -118,11 +108,20 @@ export class Stack {
 
 	}
 
+	/**
+	 *
+	 * add() allow 2 writings:
+	 *   stack.add(this.update, { thisArg: this, args: [...] })
+	 * or
+	 *   stack.add(this, 'update', ...)
+	 *
+	 */
 	add(callback, { thisArg = null, args = null  } = {}) {
 
 		if (callback && (typeof callback === 'object')) {
 
-			addAsObject(this, ...arguments)
+			let [object, key, ...args] = arguments
+			add(this, object[key], object, args)
 			return this
 
 		}
@@ -133,11 +132,32 @@ export class Stack {
 
 	}
 
+	addWithCondition(condition, callback, { thisArg = null, args = null  } = {}) {
+
+		if (callback && (typeof callback === 'object')) {
+
+			let [condition, object, key, ...args] = arguments
+
+			add(this, object[key], object, args, condition)
+
+			return this
+
+		}
+
+		add(this, callback, thisArg, args, condition)
+
+		return this
+
+	}
+
 	remove(callback, { thisArg = null  } = {}) {
 
 		if (callback && (typeof callback === 'object')) {
 
-			removeAsObject(this, ...arguments)
+			let [object, key] = arguments
+
+			remove(this, object[key], object)
+
 			return this
 
 		}
@@ -156,9 +176,12 @@ export class Stack {
 
 		for (let i = 0, n = array.length; i < n; i++) {
 
-			let { callback, thisArg, args, canceled } = array[i]
+			let { callback, thisArg, args, condition, canceled } = array[i]
 
 			if (canceled)
+				continue
+
+			if (condition && !condition(array[i]))
 				continue
 
 			if (callback.apply(thisArg, args) === false) {
@@ -182,9 +205,17 @@ export class Stack {
 
 		this.locked = true
 
-		for (let { callback, thisArg, args, canceled } of array)
-			if (!canceled)
-				callback.apply(thisArg, args)
+		for (let { callback, thisArg, args, condition, canceled } of array) {
+
+			if (canceled)
+				continue
+
+			if (condition && !condition(array[i]))
+				continue
+
+			callback.apply(thisArg, args)
+
+		}
 
 		array.length = 0
 		this.count = 0
