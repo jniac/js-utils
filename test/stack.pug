@@ -1,0 +1,11 @@
+extends test-base
+
+block title
+	title stack.js test
+
+block append style
+
+block append body
+	script(type='module').
+		import * as main from './stack-test.js'
+		Object.assign(window, main)
