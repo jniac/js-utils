@@ -4,6 +4,10 @@
  * second version built on WeakMap
  * inspired by jQuery (chaining, iterations), express (flexibility) etc.
  *
+ * 2 ways to add listeners:
+ *   - myObject.on('event-type', callback [, options])
+ *   - myObject.on('event-type', objectListener, 'methodName')
+ *
  *
  *
  * WARNINGS & VULNERABILITIES:

@@ -97,6 +97,26 @@ console.log('stack.count', stack.count)
 
 
 
+console.log(`\n\nTEST once`)
+;(() => {
+
+    let log = (...args) => console.log(...args)
+
+    class Scoped { scoped() { log(this) }}
+
+    let stack = new Stack()
+
+    stack.add(() => log(`i'm here to last`))
+    stack.once(() => log(`i'll never get back!`))
+    stack.once(new Scoped(), 'scoped')
+
+    stack.execute()
+    stack.execute()
+
+})()
+
+
+
 
 
 class B {

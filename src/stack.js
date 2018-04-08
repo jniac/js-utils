@@ -41,18 +41,18 @@ function destroyObject(object) {
 
 }
 
-function add(stack, callback, thisArg = null, args = null, condition = null) {
+function add(stack, callback, thisArg = null, args = null, once = false, condition = null) {
 
 	if (!callback)
 		return
 
 	if (stack.locked) {
 
-		stack.addArray.push({ callback, thisArg, args, condition })
+		stack.addArray.push({ callback, thisArg, args, once, condition })
 
 	} else {
 
-		stack.array.push({ callback, thisArg, args, condition })
+		stack.array.push({ callback, thisArg, args, once, condition })
 		stack.count++
 
 	}
@@ -121,12 +121,32 @@ export class Stack {
 		if (callback && (typeof callback === 'object')) {
 
 			let [object, key, ...args] = arguments
+
 			add(this, object[key], object, args)
+
 			return this
 
 		}
 
 		add(this, callback, thisArg, args)
+
+		return this
+
+	}
+
+	once(callback, { thisArg = null, args = null  } = {}) {
+
+		if (callback && (typeof callback === 'object')) {
+
+			let [object, key, ...args] = arguments
+
+			add(this, object[key], object, args, true)
+
+			return this
+
+		}
+
+		add(this, callback, thisArg, args, true)
 
 		return this
 
@@ -138,13 +158,13 @@ export class Stack {
 
 			let [condition, object, key, ...args] = arguments
 
-			add(this, object[key], object, args, condition)
+			add(this, object[key], object, args, false, condition)
 
 			return this
 
 		}
 
-		add(this, callback, thisArg, args, condition)
+		add(this, callback, thisArg, args, false, condition)
 
 		return this
 
@@ -176,7 +196,7 @@ export class Stack {
 
 		for (let i = 0, n = array.length; i < n; i++) {
 
-			let { callback, thisArg, args, condition, canceled } = array[i]
+			let { callback, thisArg, args, condition, once, canceled } = array[i]
 
 			if (canceled)
 				continue
@@ -184,7 +204,7 @@ export class Stack {
 			if (condition && !condition(array[i]))
 				continue
 
-			if (callback.apply(thisArg, args) === false) {
+			if (callback.apply(thisArg, args) === false || once) {
 
 				array[i].canceled = true
 				this.canceledCount++
