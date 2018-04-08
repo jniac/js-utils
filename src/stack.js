@@ -152,7 +152,7 @@ export class Stack {
 
 	}
 
-	addWithCondition(condition, callback, { thisArg = null, args = null  } = {}) {
+	only(condition, callback, { thisArg = null, args = null  } = {}) {
 
 		if (callback && (typeof callback === 'object')) {
 
