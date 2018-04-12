@@ -565,6 +565,7 @@ export class Color {
 	}
 
 	get hexString() { return this.getHexString() }
+	get hex() { return this.getHexString() }
 
 	get RRGGBB() { return this.getHexString({ alpha: false }) }
 	get RRGGBBAA() { return this.getHexString({ alpha: true }) }
