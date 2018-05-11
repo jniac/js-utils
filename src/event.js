@@ -364,7 +364,7 @@ class Listener {
 		}
 
 		if (callback !== null)
-			return this.match(str) && this.callback === callback
+			return this.match(str) && (this.callback === callback || this.callback === '*')
 
 		if (this.type instanceof RegExp)
 			return this.type.test(str)
