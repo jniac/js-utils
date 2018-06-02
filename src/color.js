@@ -218,6 +218,21 @@ export class Color {
 
 	}
 
+	static isColor(str, { hashTolerant = true } = {}) {
+
+		if (str in CSS)
+			return true
+
+		if (/^#[0-9A-Fa-f]+$/.test(str))
+			return str.length === 4 || str.length === 5 || str.length === 7 || str.length === 9
+
+		if (hashTolerant && /^[0-9A-Fa-f]+$/.test(str))
+			return str.length === 3 || str.length === 4 || str.length === 6 || str.length === 8
+
+		return false
+
+	}
+
 	static mix(color1, color2, q) {
 
 		color1 = Color.ensure(color1)
