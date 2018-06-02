@@ -229,6 +229,14 @@ export class Color {
 		if (hashTolerant && /^[0-9A-Fa-f]+$/.test(str))
 			return str.length === 3 || str.length === 4 || str.length === 6 || str.length === 8
 
+		let m
+
+		if (m = str.match(/rgb\((\d+)\s?,\s?(\d+)\s?,\s?(\d+)\)/))
+			return m.slice(1).map(parseFloat).every(n => n >= 0 && n <= 255)
+
+		if (m = str.match(/rgba\((\d+)\s?,\s?(\d+)\s?,\s?(\d+)\s?,\s?(.*)\)/))
+			return m.slice(1, 4).map(parseFloat).every(n => n >= 0 && n <= 255) && (m = parseFloat(m[4])) >= 0 && m <= 1
+
 		return false
 
 	}
