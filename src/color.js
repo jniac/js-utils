@@ -1,5 +1,5 @@
 /**
- * Tue Mar 06 2018
+ * Sat Jun 02 2018
  * Color plus:
  *     added hue/saturation/luminosity modifier (get/set)
  */
@@ -169,21 +169,21 @@ let re = {
 
 }
 
-function toF(x) {
+function clamp(x, min = 0, max = 1) {
+
+	return x < min ? min : x > max ? max : x
+
+}
+
+export function toF(x) {
 
 	return Math.round(clamp(x) * 0xf).toString(16)
 
 }
 
-function toFF(x) {
+export function toFF(x) {
 
 	return Math.round(clamp(x) * 0xff).toString(16).padStart(2, '0')
-
-}
-
-function clamp(x, min = 0, max = 1) {
-
-	return x < min ? min : x > max ? max : x
 
 }
 
@@ -311,8 +311,11 @@ export class Color {
 
 		if (typeof color === 'string') {
 
-			if (/^\w+$/.test(color))
+			if (/^\w+$/.test(color) && color in CSS)
 				color = CSS[color]
+
+			if (/^[0-9A-Fa-f]+/.test(color))
+				color = '#' + color
 
 			if (color[0] === '#') {
 
