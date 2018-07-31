@@ -5,11 +5,13 @@ let register = (() => {
 
     let stringMap = new Map()
 
+    let isObject = target => target && typeof target === 'object'
+
     return {
 
         get: target => (
 
-			target && typeof target === 'object'
+			isObject(target)
 
 				? objectMap.get(target)
 
@@ -19,7 +21,7 @@ let register = (() => {
 
         set: (target, value) => {
 
-			target && typeof target === 'object'
+			isObject(target)
 
 				? objectMap.set(target, value)
 
@@ -29,7 +31,7 @@ let register = (() => {
 
         delete: (target) => {
 
-			target && typeof target === 'object'
+			isObject(target)
 
                 ? objectMap.delete(target)
 
@@ -253,7 +255,7 @@ const call = (target, type, ...callArgs) => {
 	if (!array)
 		return
 
-    // do not forget to copy the array
+    // do not forget to copy the array or you will get into (big) troubles!
 	array = [...array]
 
 	let canceled = false
