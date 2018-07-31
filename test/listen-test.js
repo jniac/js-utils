@@ -43,6 +43,7 @@ Listen.call('FOO', 'BAZ', 'hello baz')
 console.logBreak()
 
 // multiple call
+console.logTitle('multiple call', `'BAZ,QUX'`)
 Listen.call('FOO', 'BAZ,QUX', 'hello both')
 
 console.logBreak()
@@ -180,23 +181,23 @@ console.logTitle('add() or remove()', 'from inside a call', 'does NOT corrupt', 
 
 Listen.add(null, 'START', (message) => {
 
-    console.log(`fill start [${message}]`)
+    console.log(`[${message}] fill start`)
 
     for (let i = 0; i < 4; i++)
-        Listen.add(null, 'START', (message) => console.log(`starter #${i} [${message}]`))
+        Listen.add(null, 'START', (message) => console.log(`[${message}] starter #${i}`))
 
-    Listen.add(null, 'START', (message) => console.log(`starter ZERO! [${message}]`), { priority:1  })
+    Listen.add(null, 'START', (message) => console.log(`[${message}] starter ZERO!`), { priority:1  })
 
     Listen.add(null, 'START', (message) => {
 
-        console.log('clear start')
+        console.log(`[${message}] clear start (the next call will not produce anything)`)
 
         Listen.remove(null, 'START', Listen.ALL)
 
     })
 
     for (let i = 4; i < 8; i++)
-        Listen.add(null, 'START', (message) => console.log(`starter #${i} [${message}]`))
+        Listen.add(null, 'START', (message) => console.log(`[${message}] starter #${i}`))
 
     return Listen.KILL
 

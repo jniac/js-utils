@@ -5,8 +5,6 @@ let register = (() => {
 
     let stringMap = new Map()
 
-    window.stringMap = stringMap
-
     return {
 
         get: target => (
@@ -215,7 +213,7 @@ const remove = (target, filter = '*', callback = ALL, { uid = -1, thisArg = null
 	}
 
     if (array.length === 0) {
-        
+
         register.delete(target)
 
     }
