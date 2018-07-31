@@ -274,7 +274,7 @@ const call = (target, type, ...callArgs) => {
         let doesMatch = match(type)
         let killed = doesMatch && callback.apply(thisArg, [...args, ...callArgs]) === KILL
 
-        if (doesMatch && killed)
+        if (killed)
             remove(target, null, null, { uid: listener.uid })
 
 	}
