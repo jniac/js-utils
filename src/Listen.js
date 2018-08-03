@@ -281,6 +281,18 @@ const call = (target, type, ...callArgs) => {
 
 }
 
+export const waitFor = (target, key) => new Promise(resolve => {
+
+    Listen.add(target, key, () => {
+
+        resolve(currentType)
+
+        return KILL
+
+    })
+
+})
+
 export default {
 
 	add,
