@@ -306,6 +306,8 @@ export default {
 	add,
 	remove,
 	call,
+    waitFor,
+    
 	current,
 
 	debug: (target) => register.get(target),
