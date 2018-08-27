@@ -272,7 +272,7 @@ const call = (target, type, ...callArgs) => {
         currentCancel = cancel
 
         let doesMatch = match(type)
-        let killed = doesMatch && callback.apply(thisArg, [...args, ...callArgs]) === KILL
+        let killed = doesMatch && callback.call(thisArg, ...args, ...callArgs) === KILL
 
         if (killed)
             remove(target, null, null, { uid: listener.uid })
