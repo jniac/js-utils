@@ -39,6 +39,14 @@ let register = (() => {
 
         },
 
+        reset: () => {
+
+            objectMap = new WeakMap()
+            stringMap.clear()
+            console.info('Listen has been reset')
+
+        },
+
     }
 
 })()
@@ -301,5 +309,6 @@ export default {
 	current,
 
 	debug: (target) => register.get(target),
+    reset: () => register.reset(),
 
 }

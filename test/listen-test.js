@@ -215,5 +215,11 @@ console.log('muted:')
 Listen.call(null, 'START', 'muted')
 console.logBreak()
 
+console.logTitle('Listen.reset()')
+Listen.add(window, '*', () => console.log(`${Listen.current.type}`))
+Listen.call(window, 'test')
+console.log(Listen.debug(window))
+Listen.reset()
+console.log(Listen.debug(window))
 
 export { Listen }
