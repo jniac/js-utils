@@ -289,7 +289,7 @@ const call = (target, type, ...callArgs) => {
 
 }
 
-export const waitFor = (target, key) => new Promise(resolve => {
+const waitFor = (target, key) => new Promise(resolve => {
 
     Listen.add(target, key, () => {
 
@@ -303,11 +303,14 @@ export const waitFor = (target, key) => new Promise(resolve => {
 
 export default {
 
+    ALL,
+    KILL,
+
 	add,
 	remove,
 	call,
     waitFor,
-    
+
 	current,
 
 	debug: (target) => register.get(target),
