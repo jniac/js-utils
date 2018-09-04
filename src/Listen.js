@@ -291,7 +291,7 @@ const call = (target, type, ...callArgs) => {
 
 const waitFor = (target, key) => new Promise(resolve => {
 
-    Listen.add(target, key, () => {
+    add(target, key, () => {
 
         resolve(currentType)
 
@@ -300,6 +300,16 @@ const waitFor = (target, key) => new Promise(resolve => {
     })
 
 })
+
+const log = (target, key = '*') => {
+
+    add(target, key, () => {
+
+        console.log(`Listen: ${String(target)} ${currentType} (${key})`)
+
+    })
+
+}
 
 export default {
 
@@ -310,6 +320,7 @@ export default {
 	remove,
 	call,
     waitFor,
+    log,
 
 	current,
 

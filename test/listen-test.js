@@ -218,8 +218,15 @@ console.logBreak()
 console.logTitle('Listen.reset()')
 Listen.add(window, '*', () => console.log(`${Listen.current.type}`))
 Listen.call(window, 'test')
-console.log(Listen.debug(window))
+console.log('before reset:', Listen.debug(window))
 Listen.reset()
-console.log(Listen.debug(window))
+console.log('after reset:', Listen.debug(window))
+
+//
+console.logBreak()
+console.logTitle('Listen.log()')
+Listen.log('APP')
+Listen.log('APP', /hello/)
+Listen.call('APP', 'hello')
 
 export { Listen }
