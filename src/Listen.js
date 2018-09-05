@@ -289,25 +289,30 @@ const call = (target, type, ...callArgs) => {
 
 }
 
-const waitFor = (target, key) => new Promise(resolve => {
+const waitFor = (target, key, callback, options) => new Promise(resolve => {
 
-    add(target, key, () => {
+    add(target, key, (...args) => {
 
-        resolve(currentType)
+        if (typeof callback === 'function')
+            callback()
+
+        let event = { type:currentType }
+
+        resolve([event, ...args])
 
         return KILL
 
-    })
+    }, options)
 
 })
 
-const log = (target, key = '*') => {
+const log = (target, key = '*', options) => {
 
     add(target, key, () => {
 
         console.log(`Listen: ${String(target)} ${currentType} (${key})`)
 
-    })
+    }, options)
 
 }
 

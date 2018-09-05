@@ -222,11 +222,37 @@ console.log('before reset:', Listen.debug(window))
 Listen.reset()
 console.log('after reset:', Listen.debug(window))
 
+
 //
 console.logBreak()
 console.logTitle('Listen.log()')
 Listen.log('APP')
-Listen.log('APP', /hello/)
+Listen.log('APP', /hello/, { priority:Infinity }) // options are still available (priority etc.)
 Listen.call('APP', 'hello')
+
+
+//
+console.logBreak()
+console.logTitle('async Listen.waitFor()')
+
+async function testWaitFor() {
+
+    let [event, ...args] = await Listen.waitFor('WAIT', '*', null, { args:['(async!)'], priority:Infinity })
+
+    console.log('[await] callback', event.type, ...args)
+
+}
+
+Listen.add('WAIT', '*', (...args) => console.log('[classic] callback', Listen.current.type, ...args))
+
+testWaitFor()
+
+Listen.call('WAIT', 'now', 'a super cool arg')
+
+console.log('be careful, promises are NOT immediate: \nresolve() always wait the next tick to be called')
+
+testWaitFor()
+setTimeout(() => Listen.call('WAIT', 'one_thick_later', 'a super cool arg'), 100)
+
 
 export { Listen }
