@@ -33,8 +33,8 @@ console.logBreak()
 
 // multiple listener
 let arr = ['BAZ','QUX']
-Listen.add('FOO', 'BAZ,QUX', event => console.log('string', Listen.current.type, event))
-Listen.add('FOO', arr, event => console.log('array', Listen.current.type, event))
+Listen.add('FOO', 'BAZ,QUX', event => console.log('string', Listen.event.type, event))
+Listen.add('FOO', arr, event => console.log('array', Listen.event.type, event))
 Listen.add('FOO', '*', () => console.log(`it's a trap (*)`))
 Listen.add('FOO', /baz|qux/i, () => console.log(`re has you (/baz|qux/i)`))
 
@@ -77,9 +77,9 @@ Listen.call('FOO', 'BAR', 'no more listener here')
 console.logBreak()
 console.logTitle('cancel(), priority & key')
 
-Listen.add(window, 'an-event', (...args) => console.log('listener 1', Listen.current.type, ...args))
-Listen.add(window, 'an-event', (...args) => console.log('listener 2', Listen.current.type, ...args))
-Listen.add(window, 'an-event', (...args) => console.log('listener 3', Listen.current.type, ...args))
+Listen.add(window, 'an-event', (...args) => console.log('listener 1', Listen.event.type, ...args))
+Listen.add(window, 'an-event', (...args) => console.log('listener 2', Listen.event.type, ...args))
+Listen.add(window, 'an-event', (...args) => console.log('listener 3', Listen.event.type, ...args))
 Listen.call(window, 'an-event', 'with', 'some', 'args')
 
 console.logBreak()
@@ -88,8 +88,8 @@ let A_UNIQUE_KEY = Symbol('A_UNIQUE_KEY')
 
 Listen.add(window, 'an-event', (...args) => {
 
-	console.log('listener ZERO!!!', Listen.current.type, ...args)
-	Listen.current.cancel()
+	console.log('listener ZERO!!!', Listen.event.type, ...args)
+	Listen.event.cancel()
 
 }, { priority: 1, key: A_UNIQUE_KEY })
 
@@ -124,7 +124,7 @@ class Foo {
 
 	print() {
 
-		console.log(`Foo#${this.uid}{} react to "${Listen.current.type}" event`)
+		console.log(`Foo#${this.uid}{} react to "${Listen.event.type}" event`)
 
 	}
 
@@ -216,7 +216,7 @@ Listen.call(null, 'START', 'muted')
 console.logBreak()
 
 console.logTitle('Listen.reset()')
-Listen.add(window, '*', () => console.log(`${Listen.current.type}`))
+Listen.add(window, '*', () => console.log(`${Listen.event.type}`))
 Listen.call(window, 'test')
 console.log('before reset:', Listen.debug(window))
 Listen.reset()
@@ -239,11 +239,11 @@ async function testWaitFor() {
 
     let [event, ...args] = await Listen.waitFor('WAIT', '*', null, { args:['(async!)'], priority:Infinity })
 
-    console.log('[await] callback', event.type, ...args)
+    console.log('[await] callback', `"${event.type}"`, ...args)
 
 }
 
-Listen.add('WAIT', '*', (...args) => console.log('[classic] callback', Listen.current.type, ...args))
+Listen.add('WAIT', '*', (...args) => console.log('[classic] callback', `"${Listen.event.type}"`, ...args))
 
 testWaitFor()
 
@@ -252,7 +252,7 @@ Listen.call('WAIT', 'now', 'a super cool arg')
 console.log('be careful, promises are NOT immediate: \nresolve() always wait the next tick to be called')
 
 testWaitFor()
-setTimeout(() => Listen.call('WAIT', 'one_thick_later', 'a super cool arg'), 100)
+setTimeout(() => Listen.call('WAIT', 'one_tick_later', 'a super cool arg'), 100)
 
 
 export { Listen }

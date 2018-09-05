@@ -230,14 +230,7 @@ const remove = (target, filter = '*', callback = ALL, { uid = -1, thisArg = null
 
 }
 
-let currentType, currentCancel
-
-const current = Object.defineProperties({}, {
-
-	type: { get: () => currentType, enumerable: true },
-	cancel: { get: () => currentCancel, enumerable: true },
-
-})
+let event = null
 
 const KILL = Symbol('Listen.KILL')
 
@@ -276,8 +269,9 @@ const call = (target, type, ...callArgs) => {
 
         let { match, callback, thisArg, args } = listener
 
-        currentType = type
-        currentCancel = cancel
+        // event is accessible from Listen.event
+        // event should always re-generated for each loop, because Listen.call is often deeply nested (one call triggering another call etc.)
+        event = { type, cancel }
 
         let doesMatch = match(type)
         let killed = doesMatch && callback.call(thisArg, ...args, ...callArgs) === KILL
@@ -293,12 +287,17 @@ const waitFor = (target, key, callback, options) => new Promise(resolve => {
 
     add(target, key, (...args) => {
 
-        if (typeof callback === 'function')
-            callback()
+        if (typeof callback === 'function') {
 
-        let event = { type:currentType }
+            callback.apply(options && options.thisArg, ...args)
 
-        resolve([event, ...args])
+        }
+
+        // clone the event (without cancel() which is useless when resolve())
+        let { type } = event
+        let cloneEvent = { type }
+
+        resolve([cloneEvent, ...args])
 
         return KILL
 
@@ -310,7 +309,7 @@ const log = (target, key = '*', options) => {
 
     add(target, key, () => {
 
-        console.log(`Listen: ${String(target)} ${currentType} (${key})`)
+        console.log(`Listen: ${String(target)} ${event.type} (${key})`)
 
     }, options)
 
@@ -327,7 +326,7 @@ export default {
     waitFor,
     log,
 
-	current,
+    get event() { return event },
 
 	debug: (target) => register.get(target),
     reset: () => register.reset(),
