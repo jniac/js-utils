@@ -225,6 +225,36 @@ console.log('after reset:', Listen.debug(window))
 
 //
 console.logBreak()
+console.logTitle('[thisArg, methodName]')
+let obj = {
+    name: 'foo',
+    hello() { console.log(`hello, my name is ${this.name}`) },
+    random() { console.log(Math.random()) },
+}
+
+// double add() should be ignored
+Listen.add('THIS', 'ARG', [obj, 'hello'])
+Listen.add('THIS', 'ARG', [obj, 'hello'])
+// but not another method
+Listen.add('THIS', 'ARG', [obj, 'random'])
+Listen.add('THIS', 'ARG', [obj, 'random'])
+
+console.log('    * foo() called once only?')
+Listen.call('THIS', 'ARG')
+console.log('    * foo() called once only!')
+
+// '*' should match every callback with [thisArg] === [obj]
+Listen.remove('THIS', 'ARG', [obj, '*'])
+
+console.log('    * muted?')
+
+Listen.call('THIS', 'ARG')
+
+console.log('    * muted!')
+
+
+//
+console.logBreak()
 console.logTitle('Listen.log()')
 Listen.log('APP')
 Listen.log('APP', /hello/, { priority:Infinity }) // options are still available (priority etc.)

@@ -142,18 +142,26 @@ const add = (target, filter, callback, { thisArg = null, args = EMPTY_ARRAY, pri
 
 	let match = getFilterMatch(filter)
 
+    let array = ensure(target)
+
 	if (Array.isArray(callback)) {
 
 		thisArg = callback[0]
 		callback = thisArg[callback[1]]
+
+        for (let listener of array) {
+
+            // ignore duplicate
+            if (listener.thisArg === thisArg && listener.callback === callback)
+                return
+
+        }
 
 	}
 
 	let listener = { filter, match, callback, thisArg, args, priority, key }
 
     Object.defineProperty(listener, 'uid', { value: listenerCount++, enumerable: true })
-
-	let array = ensure(target)
 
 	let index = 0
 
@@ -182,7 +190,7 @@ const remove = (target, filter = '*', callback = ALL, { uid = -1, thisArg = null
 	if (Array.isArray(callback)) {
 
 		thisArg = callback[0]
-		callback = thisArg[callback[1]]
+		callback = callback[1] === '*' ? ALL : thisArg[callback[1]]
 
 	}
 
