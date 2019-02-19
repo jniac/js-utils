@@ -38,12 +38,12 @@ const remap = (x, sourceMin, sourceMax, min = 0, max = 1, clamp = true) => {
 
 	// clamp is quite complex because sourceMin is not necessary < sourceMax, e.g:
 	// remap(x, 0, -2, 0, 1)
-    if (clamp)
-        x = sourceMin < sourceMax
-        ? (x < sourceMin ? sourceMin : x > sourceMax ? sourceMax : x)
-        : (x < sourceMax ? sourceMax : x > sourceMin ? sourceMin : x)
+	if (clamp)
+		x = sourceMin < sourceMax
+		? (x < sourceMin ? sourceMin : x > sourceMax ? sourceMax : x)
+		: (x < sourceMax ? sourceMax : x > sourceMin ? sourceMin : x)
 
-    return min + (max - min) * (x - sourceMin) / (sourceMax - sourceMin)
+	return min + (max - min) * (x - sourceMin) / (sourceMax - sourceMin)
 
 }
 
@@ -153,15 +153,15 @@ const easeLinearEase = (w = 3, p = 2, q = 2) => {
 	let p2 = p1 ** p
 	let q1 = q === 1 ? 1 / Math.E : (1 / q) ** (1 / (q - 1))
 	let q2 = q1 ** q
-  
-  w = Math.max(w, p1 + q1)
+
+	w = Math.max(w, p1 + q1)
 
 	let a = w - p1 + p2 - q1 + q2
 
 	let x1 = p1 / w
 	let x2 = 1 - q1 / w
 
-	return (x) => {
+	return (x) => {a
 
 		if (x < 0)
 			return 0
