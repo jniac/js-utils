@@ -128,9 +128,61 @@ const gainBind = (p = 3, i = .5, clamp = true) => x => {
  */
 const infinity = x => (x = 1 / (1 - x) - 1) * x
 
+/**
+ * ...derivation
+ */
 const infinityPrime = x => -2 * x / ((x = x - 1) * x * x)
 
+/**
+ * ...derivation angle
+ */
 const infinityPrimeAngle = x => Math.atan(-2 * x / ((x = x - 1) * x * x))
+
+
+
+/**
+ * ease in | linear | ease out
+ * https://jsfiddle.net/jniac/k6efLt5u/
+ * @param w - "weight" of the linear portion of the curve, (1 is no linear portion, > 1 is bigger linear portion)
+ * @param p - power of the ease-in portion
+ * @param q - power of the ease-out portion
+ */
+const easeLinearEase = (w = 3, p = 2, q = 2) => {
+
+	let p1 = p === 1 ? 1 / Math.E : (1 / p) ** (1 / (p - 1))
+	let p2 = p1 ** p
+	let q1 = q === 1 ? 1 / Math.E : (1 / q) ** (1 / (q - 1))
+	let q2 = q1 ** q
+  
+  w = Math.max(w, p1 + q1)
+
+	let a = w - p1 + p2 - q1 + q2
+
+	let x1 = p1 / w
+	let x2 = 1 - q1 / w
+
+	return (x) => {
+
+		if (x < 0)
+			return 0
+
+		if (x > 1)
+			return 1
+
+		if (x < x1)
+			return (x * w) ** p / a
+
+		if (x > x2)
+			return 1 - (w * (1 - x)) ** q / a
+
+		return (x * w - p1 + p2) / a
+
+	}
+
+}
+
+
+
 
 const distanceXY = (x, y) => Math.sqrt(x * x + y * y)
 
@@ -246,6 +298,8 @@ export default {
 	infinity,
 	infinityPrime,
 	infinityPrimeAngle,
+	easeLinearEase,
+	
 	distanceXY,
 	distanceXYZ,
 	distance,
